@@ -1,5 +1,3 @@
-# Cecil-Mais
-
 # Cecil Mais | Security Engineer
 
 ## Overview
