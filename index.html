@@ -193,8 +193,8 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
 <div id="api-banner" style="background:#0f1929;border-bottom:1px solid #1a2535;padding:8px 16px;display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5f7f9a;flex-shrink:0">
   <span style="color:#f59e0b">🔑</span>
   <span>Anthropic API Key:</span>
-  <input id="apikey" type="password" onkeydown="if(event.key==='Enter')saveKey()" placeholder="sk-ant-..." style="flex:1;max-width:320px;background:#06080d;border:1px solid #1a2535;border-radius:4px;color:#ddeaf8;font-family:inherit;font-size:11px;padding:4px 8px;outline:none"/>
-  <button onclick="saveKey()" style="background:#8b5cf6;border:none;color:#000;font-family:inherit;font-weight:700;font-size:11px;padding:4px 12px;border-radius:4px;cursor:pointer">Save</button>
+  <input id="apikey" type="password" placeholder="sk-ant-..." style="flex:1;max-width:320px;background:#06080d;border:1px solid #1a2535;border-radius:4px;color:#ddeaf8;font-family:inherit;font-size:11px;padding:4px 8px;outline:none"/>
+  <button id="save-btn" style="background:#8b5cf6;border:none;color:#000;font-family:inherit;font-weight:700;font-size:11px;padding:4px 12px;border-radius:4px;cursor:pointer">Save</button>
   <span id="key-status" style="color:#2a3d52">No key saved</span>
   <span style="margin-left:auto;color:#2a3d52;font-size:10px">Key stored in memory only, not persisted</span>
 </div>
@@ -593,6 +593,8 @@ E('btn-hint').addEventListener('click',function(){
   var out=E('term-out');var d=document.createElement('div');d.className='tinf';d.textContent='💡 '+labD.hint;out.appendChild(d);out.scrollTop=out.scrollHeight;
 });
 E('btn-chk').addEventListener('click',checkLab);
+E('save-btn').addEventListener('click',saveKey);
+E('apikey').addEventListener('keydown',function(e){if(e.key==='Enter')saveKey()});
 document.querySelectorAll('.lt').forEach(function(btn){
   btn.addEventListener('click',function(){
     document.querySelectorAll('.lt').forEach(function(b){b.classList.remove('on')});
@@ -603,7 +605,7 @@ document.querySelectorAll('.lt').forEach(function(btn){
 var API_KEY = '';
 function saveKey() {
   var k = document.getElementById('apikey').value.trim();
-  if (k.startsWith('sk-ant-') || k.startsWith('sk-')) {
+  if (k.length > 10) {
     API_KEY = k;
     document.getElementById('key-status').textContent = 'Key saved ✓';
     document.getElementById('key-status').style.color = '#22c55e';
@@ -611,7 +613,7 @@ function saveKey() {
     document.getElementById('api-banner').style.borderColor = '#22c55e30';
     if(sec)loadLearn();
   } else {
-    document.getElementById('key-status').textContent = 'Invalid key format';
+    document.getElementById('key-status').textContent = 'Key too short';
     document.getElementById('key-status').style.color = '#ef4444';
   }
 }
