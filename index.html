@@ -361,6 +361,10 @@ function selSec(id){
 }
 async function loadLearn(){
   if(!sec||!cert)return;
+  if(!API_KEY){
+    E('lc').innerHTML='<div style="padding:24px;color:#f59e0b;font-size:13px;line-height:1.8">🔑 <strong>API key required.</strong><br>Paste your Anthropic API key in the bar at the top and click Save.<br><br><a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#8b5cf6">Get a key at console.anthropic.com →</a></div>';
+    return;
+  }
   E('lc').innerHTML='<div style="padding:20px 0">'+skel()+'</div>';
   try{
     var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:apiHdr(),
@@ -370,7 +374,10 @@ async function loadLearn(){
     var data=await r.json();
     var blk=data.content&&data.content.find(function(b){return b.type==='text'});
     var txt=blk?blk.text:'{}';
-    var p=JSON.parse(txt.replace(/^```[^\n]*\n?/,'').replace(/```$/,'').trim());
+    // robust extraction: find first { to last }
+    var fi=txt.indexOf('{'), li=txt.lastIndexOf('}');
+    if(fi>=0&&li>fi)txt=txt.slice(fi,li+1);
+    var p=JSON.parse(txt);
     var all=cert.s.reduce(function(a,g){return a.concat(g.i)},[]);
     var idx=all.findIndex(function(i){return i.id===sec.id});
     E('lc').innerHTML=
@@ -388,8 +395,9 @@ async function loadLearn(){
     var bp=E('bp');if(bp)bp.addEventListener('click',prevSec);
     var bl=E('bl');if(bl)bl.addEventListener('click',function(){swTab('lab')});
   }catch(e){
-    E('lc').innerHTML='<div style="padding:20px;color:#ef4444">⚠️ Failed to load content.<br><button id="lr" style="margin-top:8px;padding:5px 12px;background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:5px;cursor:pointer;font-family:var(--sans);font-size:11px">Retry</button></div>';
+    E('lc').innerHTML='<div style="padding:20px;color:#ef4444">⚠️ '+esc(e.message||'Failed to load content.')+'<br><small style="color:var(--t3)">Check browser console for details</small><br><button id="lr" style="margin-top:8px;padding:5px 12px;background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:5px;cursor:pointer;font-family:var(--sans);font-size:11px">Retry</button></div>';
     var lr=E('lr');if(lr)lr.addEventListener('click',loadLearn);
+    console.error('loadLearn error:',e);
   }
 }
 function doneSec(){
@@ -424,7 +432,9 @@ async function loadLab(){
     var data=await r.json();
     var blk=data.content&&data.content.find(function(b){return b.type==='text'});
     var txt=blk?blk.text:'{}';
-    labD=JSON.parse(txt.replace(/^```[^\n]*\n?/,'').replace(/```$/,'').trim());
+    var fi=txt.indexOf('{'), li=txt.lastIndexOf('}');
+    if(fi>=0&&li>fi)txt=txt.slice(fi,li+1);
+    labD=JSON.parse(txt);
     showLab();
   }catch(e){
     E('lab-inst').innerHTML='<p style="color:#ef4444">⚠️ Failed. <button id="lr2" style="margin-left:8px;padding:4px 10px;background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:5px;cursor:pointer;font-family:var(--sans);font-size:11px">Retry</button></p>';
@@ -525,7 +535,9 @@ async function startQuiz(topic){
         messages:[{role:'user',content:'Cert: '+cert.n+' ('+cert.e+')\nFocus: '+topic+'\nGenerate 8 realistic practice questions.'}]})});
     var data=await r.json();var blk=data.content&&data.content.find(function(b){return b.type==='text'});
     var txt=blk?blk.text:'[]';
-    var qs=JSON.parse(txt.replace(/^```[^\n]*\n?/,'').replace(/```$/,'').trim());
+    var qi=txt.indexOf('['),qj=txt.lastIndexOf(']');
+    if(qi>=0&&qj>qi)txt=txt.slice(qi,qj+1);
+    var qs=JSON.parse(txt);
     qSt={cert:cert,qs:qs,idx:0,score:0,wrong:[]};renderQ();
   }catch(e){
     var w2=E('qw');w2.innerHTML='<div style="color:#ef4444;padding:20px">⚠️ Failed. <button id="qr" style="margin-left:8px;padding:5px 12px;background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:5px;cursor:pointer;font-family:var(--sans)">Retry</button></div>';
@@ -597,6 +609,7 @@ function saveKey() {
     document.getElementById('key-status').style.color = '#22c55e';
     document.getElementById('apikey').value = '';
     document.getElementById('api-banner').style.borderColor = '#22c55e30';
+    if(sec)loadLearn();
   } else {
     document.getElementById('key-status').textContent = 'Invalid key format';
     document.getElementById('key-status').style.color = '#ef4444';
