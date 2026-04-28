@@ -2701,23 +2701,7 @@ function selectSection(id){
 /* ════════════════════════════════════════════════════════════
    RENDER LEARN
 ════════════════════════════════════════════════════════════ */
-function renderLearn(){
-  const s = activeSection;
-  const c = activeCert;
-  const l = LEARN[s.id] || {tag:'',weight:'',title:s.label,sub:'Content coming soon.',body:'<p>This section is being prepared.</p>'};
-  document.getElementById('learn-content').innerHTML =
-    '<div class="lc-crumb">'+c.name+' · '+c.version+'</div>'+
-    '<span class="lc-tag" style="color:'+c.color+';border-color:'+c.color+'40;background:'+c.dim+'">'+l.tag+'</span>'+
-    '<span class="lc-wt">'+l.weight+'</span>'+
-    '<h1 class="lc-h1">'+l.title+'</h1>'+
-    '<p class="lc-sub">'+l.sub+'</p>'+
-    '<div class="lc-body">'+l.body+'</div>'+
-    '<div class="lc-nav">'+
-      '<button class="btn-p" onclick="prevSection()">&#8592; Prev</button>'+
-      '<button class="btn-n" style="background:'+c.color+'" onclick="completeSection()">Done &amp; Next &#8594;</button>'+
-      (s.lab?'<button class="btn-l" style="color:'+c.color+';border-color:'+c.color+'40" onclick="switchTab(\'lab\',document.getElementById(\'tab-lab\'))">&#x1f52c; Do the Lab &#8594;</button>':'')+
-    '</div>';
-}
+
 function completeSection(){
   if(!activeSection) return;
   completed.add(activeSection.id);
@@ -2859,32 +2843,7 @@ function addUser(txt){
   d.style.color=activeCert?activeCert.color:'var(--t2)';
   d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
 }
-async function sendTutor(){
-  const inp=document.getElementById('ai-in');
-  const q=inp.value.trim();if(!q)return;
-  inp.value='';document.getElementById('ai-go').disabled=true;
-  addUser(q);tutorHistory.push({role:'user',content:q});
-  const certName = activeCert?.name||'IT certification';
-  const secLabel = activeSection?.label||'general topic';
-  const sys=`You are an expert certification exam tutor. The student is studying for: ${certName} (${activeCert?.version||''}).
-Current section: "${secLabel}".
-Exam details: ${activeCert?.exam||''}.
-Answer in 2-4 sentences. Use backticks for commands/code. Be exam-focused — mention what the exam specifically tests. The student (Cecil) has a background in IAM, system administration, and security. Don't over-explain basics.
-If asked for an exam question, provide one MCQ with 4 options, mark the correct answer, and explain why.`;
-  try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:sys,messages:tutorHistory})});
-    const data=await r.json();
-    const ans=data.content?.find(b=>b.type==='text')?.text||'';
-    tutorHistory.push({role:'assistant',content:ans});
-    addBot(fmtCode(ans));
-  }catch(e){addBot('⚠️ Connection error.')}
-  document.getElementById('ai-go').disabled=false;
-}
-
-/* ════════════════════════════════════════════════════════════
-   QUIZ
-════════════════════════════════════════════════════════════ */
+async 
 function renderQuizForCert(){
   if(!activeCert) return;
   // Collect all questions from this cert
