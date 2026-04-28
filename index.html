@@ -189,7 +189,16 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
 </style>
 </head>
 <body>
-<div class="app">
+<div style="display:flex;flex-direction:column;height:100vh">
+<div id="api-banner" style="background:#0f1929;border-bottom:1px solid #1a2535;padding:8px 16px;display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5f7f9a;flex-shrink:0">
+  <span style="color:#f59e0b">🔑</span>
+  <span>Anthropic API Key:</span>
+  <input id="apikey" type="password" onkeydown="if(event.key==='Enter')saveKey()" placeholder="sk-ant-..." style="flex:1;max-width:320px;background:#06080d;border:1px solid #1a2535;border-radius:4px;color:#ddeaf8;font-family:inherit;font-size:11px;padding:4px 8px;outline:none"/>
+  <button onclick="saveKey()" style="background:#8b5cf6;border:none;color:#000;font-family:inherit;font-weight:700;font-size:11px;padding:4px 12px;border-radius:4px;cursor:pointer">Save</button>
+  <span id="key-status" style="color:#2a3d52">No key saved</span>
+  <span style="margin-left:auto;color:#2a3d52;font-size:10px">Key stored in memory only, not persisted</span>
+</div>
+<div class="app" style="flex:1;min-height:0">
 <div class="rail" id="rail"><div class="rl">CERT<br>LAB</div></div>
 <div class="ssb">
   <div class="ssb-hd">
@@ -247,6 +256,7 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
     </div>
     <div class="pnl quiz-pnl" id="pnl-quiz"><div class="qw" id="qw"><div style="text-align:center;color:var(--t3);padding:40px"><div style="font-size:32px;margin-bottom:10px">🎯</div>Select a cert to start a quiz</div></div></div>
   </div>
+</div>
 </div>
 </div>
 <script>
@@ -353,7 +363,7 @@ async function loadLearn(){
   if(!sec||!cert)return;
   E('lc').innerHTML='<div style="padding:20px 0">'+skel()+'</div>';
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:apiHdr(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Return ONLY valid JSON, no markdown fences. Schema: {"tag":"","weight":"","title":"","sub":"","body":"HTML string"}. Body HTML: use <h3>,<p>,<pre>,<ul><li>,<strong>,<div class="tip-box"><strong>Exam tip:</strong>...</div>,<div class="warn-box">Gotcha:...</div>,<div class="info-box"><div class="info-box-title">Enterprise Context</div><p>...</p></div>. Max 2000 chars. Exam-specific facts, common gotchas, enterprise context.',
         messages:[{role:'user',content:'Cert: '+cert.n+' ('+cert.e+')\nSection: '+sec.l+'\nCreate concise exam study content.'}]})});
@@ -407,7 +417,7 @@ async function loadLab(){
   E('vbar').innerHTML='<div class="v-dot" style="background:var(--t3)"></div><span style="color:var(--t3)">Loading…</span>';
   E('term-out').innerHTML='<span class="tdim">Ready ↓</span>';
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:apiHdr(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Return ONLY valid JSON, no markdown fences. Schema: {"title":"","obj":"","fname":"","inst":"HTML","ent":"HTML","tips":"HTML","starter":"code","hint":"text","checks":[{"pattern":"regex","msg":"description"}],"cmds":{"command":["output"]}}. inst/ent/tips: use <h2>,<p>,<div class="sr"><div class="sn" style="background:COLOR">N</div>step text</div>. Starter under 600 chars. 3-5 checks. 4-6 cmds.',
         messages:[{role:'user',content:'Cert: '+cert.n+'\nSection: '+sec.l+'\nColor: '+cert.c+'\nCreate a practical hands-on lab matching actual exam content.'}]})});
@@ -483,7 +493,7 @@ async function sendTutor(){
   var inp=E('ai-in');var q=inp.value.trim();if(!q)return;
   inp.value='';E('ai-go').disabled=true;addUser(q);tutH.push({role:'user',content:q});
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:apiHdr(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Cert exam tutor. Cert: '+(cert&&cert.n||'IT')+'. Section: '+(sec&&sec.l||'general')+'. Answer in 2-4 sentences. Backticks for code. Exam-focused. Student Cecil has IAM/sysadmin/security background. For practice questions give MCQ with 4 options, correct answer, explanation.',
         messages:tutH})});
@@ -509,7 +519,7 @@ function renderQP(){
 async function startQuiz(topic){
   var w=E('qw');w.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3)"><div style="font-size:24px;margin-bottom:8px">⚙️</div>Generating questions…</div>';
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:apiHdr(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Return ONLY a valid JSON array of 8 question objects, no markdown fences. Schema: [{"q":"question","opts":["A","B","C","D"],"a":0,"dom":"domain","explain":"explanation"}]. a = 0-based correct answer index. Realistic exam-level difficulty, scenario-based.',
         messages:[{role:'user',content:'Cert: '+cert.n+' ('+cert.e+')\nFocus: '+topic+'\nGenerate 8 realistic practice questions.'}]})});
@@ -577,6 +587,27 @@ document.querySelectorAll('.lt').forEach(function(btn){
     btn.classList.add('on');showLT(btn.dataset.t);
   });
 });
+
+var API_KEY = '';
+function saveKey() {
+  var k = document.getElementById('apikey').value.trim();
+  if (k.startsWith('sk-ant-') || k.startsWith('sk-')) {
+    API_KEY = k;
+    document.getElementById('key-status').textContent = 'Key saved ✓';
+    document.getElementById('key-status').style.color = '#22c55e';
+    document.getElementById('apikey').value = '';
+    document.getElementById('api-banner').style.borderColor = '#22c55e30';
+  } else {
+    document.getElementById('key-status').textContent = 'Invalid key format';
+    document.getElementById('key-status').style.color = '#ef4444';
+  }
+}
+function apiHdr() {
+  var h = {'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'};
+  if (API_KEY) h['x-api-key'] = API_KEY;
+  return h;
+}
+
 </script>
 </body>
 </html>
