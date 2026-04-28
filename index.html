@@ -2,543 +2,373 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CertLab Pro — System Engineer Certification Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Unbounded:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CertLab Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#07090e;--s1:#0c1018;--s2:#111820;--s3:#18222e;--s4:#1e2c3c;
-  --b1:#1c2a38;--b2:#243548;--b3:#2e4258;
-  --t1:#e4eefa;--t2:#6e8fae;--t3:#3a5268;--t4:#203040;
-  --code:#040810;
-  /* Cert colors */
-  --tf:#8b5cf6;   --tfd:rgba(139,92,246,.13);   --tfb:rgba(139,92,246,.3);
-  --az5:#ef4444;  --az5d:rgba(239,68,68,.13);   --az5b:rgba(239,68,68,.3);
-  --az1:#3b82f6;  --az1d:rgba(59,130,246,.13);  --az1b:rgba(59,130,246,.3);
-  --rh:#ee0000;   --rhd:rgba(238,0,0,.13);      --rhb:rgba(238,0,0,.3);
-  --sp:#f97316;   --spd:rgba(249,115,22,.13);   --spb:rgba(249,115,22,.3);
-  --np:#eab308;   --npd:rgba(234,179,8,.13);    --npb:rgba(234,179,8,.3);
-  --cka:#326ce5;  --ckad:rgba(50,108,229,.13);  --ckab:rgba(50,108,229,.3);
-  --aws:#ff9900;  --awsd:rgba(255,153,0,.13);   --awsb:rgba(255,153,0,.3);
-  --green:#22c55e; --gd:rgba(34,197,94,.1);
-  --gold:#f59e0b;  --god:rgba(245,158,11,.1);
-  --red:#ef4444;   --rd:rgba(239,68,68,.1);
+  --bg:#080c12;--s1:#0d1420;--s2:#111a26;--s3:#16202e;--s4:#1c2a3a;
+  --b1:#1e2d3f;--b2:#243347;--b3:#2a3d54;
+  --t1:#e8f4ff;--t2:#8ab4d4;--t3:#4a6a85;--t4:#2a4055;
+  --green:#22c55e;--gold:#f59e0b;--red:#ef4444;--blue:#3b82f6;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+  --rad:8px;--rad-lg:12px;--shadow:0 4px 24px rgba(0,0,0,.4);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;font-size:14px}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px}
+button{font-family:var(--sans);cursor:pointer}
+input,textarea{font-family:var(--sans)}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b3);border-radius:2px}
 
-/* ══ OUTER SHELL ══ */
-.shell{display:flex;height:calc(100vh - 38px);overflow:hidden}
+/* LAYOUT */
+#app{display:grid;grid-template-rows:44px 1fr;height:100vh;overflow:hidden}
+#topbar{background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0;z-index:100}
+#main{display:grid;grid-template-columns:52px 220px 1fr;overflow:hidden}
 
-/* ══ CERT RAIL (far left) ══ */
-.rail{
-  width:60px;flex-shrink:0;background:var(--s1);
-  border-right:1px solid var(--b1);
-  display:flex;flex-direction:column;align-items:center;
-  padding:10px 0;gap:3px;z-index:20;
-}
-.rail-logo{
-  font-family:'Unbounded',sans-serif;font-size:9px;font-weight:900;
-  color:var(--t3);text-align:center;margin-bottom:8px;padding:0 6px;
-  line-height:1.2;letter-spacing:-.3px;
-}
-.rail-div{width:36px;height:1px;background:var(--b1);margin:4px 0}
-.rb{
-  width:44px;height:44px;border-radius:9px;
-  border:1px solid transparent;background:transparent;
-  cursor:pointer;transition:all .15s;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1px;position:relative;
-}
-.rb:hover{background:var(--s2)}
-.rb-label{font-size:8px;font-weight:700;font-family:'DM Mono',monospace;color:var(--t3);transition:color .15s}
-.rb-dot{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background .15s}
-.rb:hover .rb-label{color:var(--t2)}
-.rb.sel .rb-label,.rb.sel .rb-dot{color:var(--t1)}
-.rb-tip{
-  position:absolute;left:54px;top:50%;transform:translateY(-50%);
-  background:var(--s2);border:1px solid var(--b2);border-radius:6px;
-  padding:4px 10px;font-size:11px;white-space:nowrap;color:var(--t1);
-  display:none;pointer-events:none;z-index:200;
-  font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.4);
-}
-.rb:hover .rb-tip{display:block}
+/* TOPBAR */
+.logo{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t3);letter-spacing:2px;border-right:1px solid var(--b1);padding-right:14px;margin-right:2px}
+.logo span{color:var(--t1)}
+.key-lbl{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap}
+#apikey{background:var(--s2);border:1px solid var(--b2);border-radius:5px;color:var(--t1);font-family:var(--mono);font-size:11px;padding:4px 10px;width:250px;outline:none;transition:border-color .15s}
+#apikey:focus{border-color:var(--t3)}
+#btn-save-key{background:var(--b2);border:1px solid var(--b3);color:var(--t2);font-size:11px;font-weight:600;padding:4px 12px;border-radius:5px;transition:all .15s}
+#btn-save-key:hover{background:var(--t3);color:var(--t1)}
+#key-status{font-family:var(--mono);font-size:10px;color:var(--t4)}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.prog-wrap{display:flex;align-items:center;gap:6px}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--t3)}
+.prog-bar{width:80px;height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;background:var(--green);transition:width .5s}
+#tb-xp{font-family:var(--mono);font-size:11px;color:var(--gold);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);padding:3px 10px;border-radius:20px}
 
-/* ══ SECTION SIDEBAR ══ */
-.ssb{
-  width:230px;flex-shrink:0;background:var(--s1);
-  border-right:1px solid var(--b1);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.ssb-head{
-  padding:13px 12px 10px;border-bottom:1px solid var(--b1);flex-shrink:0;
-}
-.ssb-cert-name{
-  font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;
-  letter-spacing:-.3px;margin-bottom:2px;
-}
-.ssb-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3)}
-.ssb-prog-bar{height:3px;background:var(--b1);border-radius:2px;overflow:hidden;margin-top:8px}
-.ssb-prog-fill{height:100%;border-radius:2px;transition:width .3s}
-.ssb-list{flex:1;overflow-y:auto;padding:6px}
-.sg{margin-bottom:2px}
-.sg-label{
-  font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;
-  letter-spacing:1.2px;padding:7px 8px 4px;
-}
-.si{
-  display:flex;align-items:center;gap:6px;padding:6px 8px;
-  border-radius:6px;cursor:pointer;border:1px solid transparent;
-  transition:all .12s;font-size:11.5px;color:var(--t2);
-}
-.si:hover{background:var(--s2);color:var(--t1)}
-.si.active{background:var(--s2);border-color:var(--b2);color:var(--t1)}
-.si.done .si-dot{background:var(--green)!important}
-.si-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.si-txt{flex:1;line-height:1.3}
-.si-lab-tag{
-  font-size:8px;font-family:'DM Mono',monospace;font-weight:600;
-  padding:1px 5px;border-radius:3px;flex-shrink:0;
-  border:1px solid transparent;
-}
+/* RAIL */
+#rail{background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
+.rb{position:relative;width:40px;height:40px;border-radius:var(--rad);border:1px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all .15s}
+.rb:hover,.rb.on{background:var(--s2);border-color:var(--b2)}
+.rb.on{border-color:currentColor}
+.rb-dot{width:8px;height:8px;border-radius:50%}
+.rb-lbl{font-family:var(--mono);font-size:7px;font-weight:600;color:var(--t3);line-height:1}
+.rb.on .rb-lbl{color:inherit}
+.rb-tip{position:absolute;left:48px;top:50%;transform:translateY(-50%);background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:5px 11px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .12s;z-index:999;box-shadow:var(--shadow)}
+.rb:hover .rb-tip{opacity:1}
 
-/* ══ MAIN ══ */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+/* SIDEBAR */
+#sidebar{background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+#sb-head{padding:14px 12px 10px;border-bottom:1px solid var(--b1);flex-shrink:0}
+#sb-name{font-size:13px;font-weight:700;margin-bottom:2px}
+#sb-meta{font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.5}
+#sb-bar{height:2px;background:var(--b1);border-radius:1px;margin-top:8px}
+#sb-fill{height:100%;border-radius:1px;transition:width .4s}
+#sb-list{flex:1;overflow-y:auto;padding:6px}
+.sb-grp{font-family:var(--mono);font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;padding:10px 8px 4px}
+.sb-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:6px;cursor:pointer;transition:all .12s;border:1px solid transparent}
+.sb-item:hover{background:var(--s2)}
+.sb-item.active{background:var(--s3);border-color:var(--b2)}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--b3);flex-shrink:0;transition:background .3s}
+.sb-item.done .sb-dot{background:var(--green)!important}
+.sb-txt{flex:1;font-size:11px;color:var(--t2);line-height:1.3}
+.sb-item.active .sb-txt,.sb-item:hover .sb-txt{color:var(--t1)}
+.sb-badge{font-family:var(--mono);font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--b2);color:var(--t3);flex-shrink:0}
 
-/* Tabbar */
-.tbar{
-  background:var(--s1);border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;height:40px;flex-shrink:0;padding:0 14px;gap:1px;
-}
-.tb{
-  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
-  padding:0 13px;height:100%;border:none;background:transparent;
-  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;
-  transition:all .12s;display:flex;align-items:center;gap:4px;
-}
-.tb:hover{color:var(--t2)}
-.tb.on{color:var(--t1);border-bottom-color:currentColor}
-.tbar-r{margin-left:auto;display:flex;align-items:center;gap:8px}
-.xp-chip{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
-  color:var(--gold);background:var(--god);border:1px solid rgba(245,158,11,.2);
-  padding:2px 8px;border-radius:20px;
-}
-.done-chip{font-size:11px;color:var(--t3)}
+/* CONTENT */
+#content{display:grid;grid-template-rows:40px 1fr;overflow:hidden}
+#tabs{background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 4px;gap:1px;flex-shrink:0}
+.tab-btn{background:transparent;border:none;color:var(--t3);font-size:12px;font-weight:600;padding:0 16px;height:40px;border-bottom:2px solid transparent;transition:all .12s;display:flex;align-items:center;gap:5px}
+.tab-btn:hover{color:var(--t2)}
+.tab-btn.active{color:var(--t1);border-bottom-color:currentColor}
+#panels{overflow:hidden;height:100%}
+.panel{display:none;height:100%}
+.panel.active{display:flex}
 
-/* Panels */
-.panels{flex:1;overflow:hidden}
-.pnl{display:none;height:100%;overflow:hidden}
-.pnl.on{display:flex}
+/* LEARN */
+#panel-learn{flex-direction:row}
+#learn-scroll{flex:1;overflow-y:auto;padding:32px 36px}
+#learn-content{max-width:680px}
+.lc-crumb{font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.lc-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.lc-tag{font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid}
+.lc-wt{font-family:var(--mono);font-size:10px;color:var(--t3)}
+.lc-h1{font-size:24px;font-weight:700;line-height:1.25;margin-bottom:8px;letter-spacing:-.3px}
+.lc-sub{font-size:14px;color:var(--t2);line-height:1.65;margin-bottom:24px}
+.lc-body{font-size:13.5px;line-height:1.85;color:#8fb8d8}
+.lc-body h3{font-size:12px;font-weight:700;color:var(--t1);text-transform:uppercase;letter-spacing:.8px;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--b1)}
+.lc-body p{margin-bottom:12px}
+.lc-body ul,.lc-body ol{padding-left:20px;margin-bottom:14px}
+.lc-body li{margin-bottom:6px}
+.lc-body strong{color:var(--t1);font-weight:600}
+.lc-body code{font-family:var(--mono);font-size:11.5px;background:rgba(59,130,246,.1);color:#7fb8d8;padding:1px 6px;border-radius:4px;border:1px solid rgba(59,130,246,.12)}
+.lc-body pre{font-family:var(--mono);font-size:11.5px;background:var(--s2);border:1px solid var(--b2);border-left:3px solid var(--b3);border-radius:var(--rad);padding:16px 18px;overflow-x:auto;margin:14px 0;line-height:1.7;color:#7fb8d8}
+.cb{background:var(--s2);border:1px solid var(--b2);border-left:3px solid var(--b3);border-radius:var(--rad);padding:14px 16px;overflow-x:auto;margin:12px 0;font-family:var(--mono);font-size:11.5px;line-height:1.7}
+.cb .cc{color:var(--t4)}
+.cb .ck{color:#c084fc}
+.cb .cs{color:#86efac}
+.cb .ca{color:#7fb8d8}
+.cb .cn{color:var(--gold)}
+.tip-box,.warn-box,.info-box,.note-box{border-radius:var(--rad);padding:12px 16px;margin:14px 0;font-size:13px;line-height:1.65;border-left:3px solid}
+.tip-box{background:rgba(245,158,11,.07);border-color:var(--gold);color:#fcd34d}
+.tip-box strong{color:var(--gold)}
+.warn-box{background:rgba(239,68,68,.07);border-color:var(--red);color:#fca5a5}
+.warn-box strong{color:var(--red)}
+.info-box{background:rgba(59,130,246,.07);border-color:var(--blue);color:#93c5fd}
+.info-box strong{color:var(--blue)}
+.note-box{background:var(--s2);border-color:var(--b3);color:var(--t2)}
+.box-lbl{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;opacity:.7}
+.lc-nav{display:flex;align-items:center;gap:8px;margin-top:32px;padding-top:20px;border-top:1px solid var(--b1);flex-wrap:wrap}
+.btn-prev{background:transparent;border:1px solid var(--b2);color:var(--t2);padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;transition:all .15s}
+.btn-prev:hover{border-color:var(--b3);color:var(--t1)}
+.btn-next{border:none;color:#000;padding:8px 20px;border-radius:6px;font-size:12px;font-weight:700;transition:filter .15s}
+.btn-next:hover{filter:brightness(1.1)}
+.btn-lab-link{background:transparent;border:1px solid;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:600;margin-left:auto;transition:all .15s}
+.btn-lab-link:hover{opacity:.8}
 
-/* ════════════════════════════════════
-   LEARN PANEL
-════════════════════════════════════ */
-.learn-pnl{flex-direction:row}
-.lc{flex:1;overflow-y:auto;padding:26px 30px;max-width:680px}
-.lc-crumb{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:12px}
-.lc-tag{
-  font-size:9px;font-family:'DM Mono',monospace;font-weight:700;
-  padding:2px 8px;border-radius:20px;border:1px solid;
-  display:inline-block;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;
-}
-.lc-wt{
-  font-size:9px;font-family:'DM Mono',monospace;font-weight:600;
-  padding:2px 8px;border-radius:20px;border:1px solid rgba(245,158,11,.25);
-  background:var(--god);color:var(--gold);display:inline-block;margin-bottom:7px;margin-left:5px;
-}
-.lc-h1{
-  font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;
-  line-height:1.25;margin-bottom:5px;letter-spacing:-.5px;
-}
-.lc-sub{font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.7;font-style:italic}
-.lc-body{font-size:13.5px;line-height:1.85;color:#a8bfd8}
-.lc-body h3{font-size:13.5px;font-weight:600;color:var(--t1);margin:18px 0 6px}
-.lc-body p{margin-bottom:10px}
-.lc-body strong{font-weight:600}
-.lc-body ul{padding-left:18px;margin-bottom:10px}
-.lc-body li{margin-bottom:4px}
-.cb{
-  background:var(--code);border:1px solid var(--b1);border-radius:7px;
-  padding:12px 14px;font-family:'DM Mono',monospace;font-size:11.5px;
-  line-height:1.75;overflow-x:auto;margin:10px 0;white-space:pre;color:#6a8ea8;
-}
-.cb .ck{color:#b08cff}.cb .cs{color:#6dbf9e}.cb .ca{color:#5b9fd4}
-.cb .cc{color:#263a4a}.cb .cn{color:#e8a262}
-.ibox{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:11px 14px;margin:10px 0}
-.ibox-t{
-  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-  margin-bottom:5px;display:flex;align-items:center;gap:4px;
-}
-.ibox-t::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
-.ibox p,.ibox li{font-size:12.5px;line-height:1.65;color:var(--t1)}
-.ibox ul{padding-left:16px}
-.ibox li{margin-bottom:3px}
-.tip{background:var(--god);border:1px solid rgba(245,158,11,.25);border-radius:7px;padding:11px 14px;margin:10px 0;font-size:12.5px;color:#fcd34d;line-height:1.65}
-.tip strong{color:var(--gold);font-weight:700}
-.warn{background:var(--rd);border:1px solid rgba(239,68,68,.25);border-radius:7px;padding:11px 14px;margin:10px 0;font-size:12.5px;color:#fca5a5;line-height:1.65}
-.lc-body code,.ibox code,.tip code,.warn code{
-  font-family:'DM Mono',monospace;font-size:10.5px;
-  padding:1px 4px;border-radius:3px;background:rgba(90,130,170,.15);color:#7fb8d8;
-}
-.step-row{
-  display:flex;align-items:flex-start;gap:9px;
-  background:var(--s2);border:1px solid var(--b2);border-radius:6px;
-  padding:9px 12px;margin:5px 0;font-size:12.5px;line-height:1.6;
-}
-.step-n{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
-  color:#000;border-radius:4px;width:19px;height:19px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
-}
-.lc-nav{display:flex;gap:7px;margin-top:24px;padding-top:16px;border-top:1px solid var(--b1);flex-wrap:wrap;align-items:center}
-.btn-p{font-family:'DM Sans',sans-serif;font-size:12px;background:transparent;color:var(--t2);border:1px solid var(--b2);padding:7px 15px;border-radius:6px;cursor:pointer;transition:all .13s}
-.btn-p:hover{border-color:var(--t2);color:var(--t1)}
-.btn-n{font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;color:#000;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;transition:all .13s}
-.btn-n:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn-l{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
-  background:transparent;border:1px solid;padding:7px 14px;border-radius:6px;
-  cursor:pointer;transition:all .13s;margin-left:auto;
-}
-.btn-l:hover{filter:brightness(1.2)}
+/* TUTOR */
+#tutor-pane{width:252px;flex-shrink:0;border-left:1px solid var(--b1);display:flex;flex-direction:column;background:var(--bg)}
+#tutor-head{padding:10px 12px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:7px;flex-shrink:0}
+.t-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.t-lbl{font-family:var(--mono);font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px}
+#tutor-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.msg{font-size:12px;line-height:1.6;padding:9px 11px;border-radius:7px;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.msg-bot{background:var(--s2);border:1px solid var(--b1);color:var(--t1)}
+.msg-bot code{font-family:var(--mono);font-size:10.5px;background:rgba(59,130,246,.1);color:#7fb8d8;padding:1px 4px;border-radius:3px}
+.msg-user{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:var(--t2);text-align:right}
+.dots{display:flex;gap:3px;padding:4px;align-items:center}
+.d{width:4px;height:4px;border-radius:50%;background:var(--t3);animation:dn .8s infinite}
+.d:nth-child(2){animation-delay:.15s}.d:nth-child(3){animation-delay:.3s}
+@keyframes dn{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+#tutor-foot{padding:8px;border-top:1px solid var(--b1);display:flex;gap:6px;flex-shrink:0}
+#tutor-input{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:6px;color:var(--t1);font-size:12px;padding:7px 10px;outline:none;transition:border-color .15s}
+#tutor-input:focus{border-color:var(--t3)}
+#tutor-input::placeholder{color:var(--t4);font-size:11px}
+#tutor-send{border:none;border-radius:6px;width:34px;height:34px;font-size:15px;background:var(--b2);color:var(--t2);transition:all .15s;flex-shrink:0}
+#tutor-send:hover:not(:disabled){background:var(--t3);color:var(--t1)}
+#tutor-send:disabled{opacity:.3}
 
-/* AI Tutor */
-.ai-pane{width:260px;flex-shrink:0;border-left:1px solid var(--b1);display:flex;flex-direction:column;background:var(--bg)}
-.ai-h{
-  padding:9px 12px;border-bottom:1px solid var(--b1);font-size:9px;
-  font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;
-  display:flex;align-items:center;gap:5px;flex-shrink:0;
-}
-.ai-pulse{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.ai-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
-.am{font-size:11.5px;line-height:1.65;padding:8px 10px;border-radius:7px;animation:fu .2s ease forwards;opacity:0}
-.am.b{background:var(--s2);border:1px solid var(--b1);color:var(--t1)}
-.am.u{text-align:right;font-size:11.5px}
-.am code{font-family:'DM Mono',monospace;font-size:10px;padding:1px 4px;border-radius:3px;background:rgba(90,130,170,.15);color:#7fb8d8}
-.ai-foot{padding:7px;border-top:1px solid var(--b1);display:flex;gap:4px;flex-shrink:0}
-.ai-in{
-  flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:5px;
-  color:var(--t1);font-family:'DM Sans',sans-serif;font-size:11.5px;
-  padding:6px 8px;outline:none;transition:border-color .13s;
-}
-.ai-in:focus{border-color:var(--t2)}
-.ai-in::placeholder{color:var(--t3);font-size:10.5px}
-.ai-go{
-  border:none;border-radius:5px;padding:0 10px;
-  font-size:12px;cursor:pointer;font-weight:700;transition:all .13s;color:#000;
-}
-.ai-go:disabled{opacity:.3;cursor:not-allowed}
-
-/* ════════════════════════════════════
-   LAB PANEL
-════════════════════════════════════ */
-.lab-pnl{flex-direction:column}
-.lab-top{
-  background:var(--s1);border-bottom:1px solid var(--b1);
-  padding:8px 14px;display:flex;align-items:center;gap:6px;
-  overflow-x:auto;flex-shrink:0;
-}
-.lt-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;margin-right:4px}
-.lab-pick-btn{
-  font-family:'DM Mono',monospace;font-size:10px;
-  padding:4px 11px;border-radius:5px;border:1px solid var(--b2);
-  background:transparent;color:var(--t3);cursor:pointer;white-space:nowrap;transition:all .12s;
-}
-.lab-pick-btn:hover{color:var(--t2);border-color:var(--b3)}
-.lab-pick-btn.on{background:var(--s3);border-color:var(--b3);color:var(--t1)}
-
-.lab-body{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0;overflow:hidden}
-.lab-left{border-right:1px solid var(--b1);display:flex;flex-direction:column}
-.lab-tabs{display:flex;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0}
-.lt{
-  font-family:'DM Mono',monospace;font-size:10px;
-  padding:7px 13px;border:none;background:transparent;
-  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;
-}
-.lt.on{color:var(--t1);border-bottom-color:currentColor;background:var(--s2)}
-.lab-inst{flex:1;overflow-y:auto;padding:16px 18px;font-size:13px;line-height:1.8;color:#a0b8d0}
-.lab-inst h2{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px;letter-spacing:-.3px}
-.lab-inst h3{font-size:13px;font-weight:600;color:var(--t1);margin:14px 0 5px}
-.lab-inst p{margin-bottom:9px}
-.lab-inst code{font-family:'DM Mono',monospace;font-size:10.5px;padding:1px 4px;border-radius:3px;background:rgba(90,130,170,.15);color:#7fb8d8}
-.lab-inst strong{color:var(--t1);font-weight:600}
-.lab-inst .sr{display:flex;align-items:flex-start;gap:8px;background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:8px 11px;margin:5px 0;font-size:12.5px;line-height:1.55}
-.lab-inst .sn{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;color:#000;border-radius:3px;width:17px;height:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.e-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:5px;vertical-align:middle}
-.obj-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:5px;vertical-align:middle;background:var(--god);color:var(--gold);border:1px solid rgba(245,158,11,.25)}
-
-/* Terminal */
-.term-wrap{height:175px;border-top:1px solid var(--b1);background:var(--code);display:flex;flex-direction:column;flex-shrink:0}
-.term-h{padding:5px 11px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);flex-shrink:0}
-.td{width:7px;height:7px;border-radius:50%}
-.term-out{flex:1;overflow-y:auto;padding:6px 11px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.6;color:#2e4a60}
-.tok{color:#22c55e}.twarn{color:#f59e0b}.terr{color:#ef4444}.tinfo{color:#3b82f6}.tdim{color:#1e3040}.tcmd{color:#5eead4}
-.term-in-row{display:flex;border-top:1px solid var(--b1);flex-shrink:0}
-.t-prompt{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--green);padding:6px 0 6px 11px;flex-shrink:0}
-.t-in{flex:1;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--t1);padding:6px 8px}
-
-/* Lab right — editor */
-.lab-right{display:flex;flex-direction:column}
-.ed-h{
-  padding:7px 13px;border-bottom:1px solid var(--b1);background:var(--s1);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.ed-fname{font-family:'DM Mono',monospace;font-size:11px;color:var(--t2)}
-.ed-acts{display:flex;gap:5px}
-.btn-hint{font-family:'DM Sans',sans-serif;font-size:11px;background:transparent;color:var(--t3);border:1px solid var(--b2);padding:4px 11px;border-radius:5px;cursor:pointer;transition:all .12s}
-.btn-hint:hover{border-color:var(--b3);color:var(--t2)}
-.btn-check{font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;color:#000;border:none;padding:4px 13px;border-radius:5px;cursor:pointer;transition:all .12s}
+/* LAB */
+#panel-lab{flex-direction:column}
+#lab-head{background:var(--s1);border-bottom:1px solid var(--b1);padding:0 14px;display:flex;align-items:center;gap:10px;height:44px;flex-shrink:0}
+#lab-title{font-size:13px;font-weight:700}
+.obj-badge{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+#lab-body{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0;overflow:hidden}
+#lab-left{border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+#lab-tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--b1);flex-shrink:0}
+.lt{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--t3);font-family:var(--mono);font-size:10px;padding:8px 14px;cursor:pointer;transition:all .12s}
+.lt:hover{color:var(--t2)}
+.lt.active{color:var(--t1);border-bottom-color:currentColor;background:var(--s2)}
+#lab-inst{flex:1;overflow-y:auto;padding:16px 18px;font-size:13px;line-height:1.8;color:#8ab4d4}
+#lab-inst h2{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:10px}
+#lab-inst p{margin-bottom:10px}
+#lab-inst code{font-family:var(--mono);font-size:11px;background:rgba(59,130,246,.1);color:#7fb8d8;padding:1px 5px;border-radius:3px}
+#lab-inst strong{color:var(--t1)}
+.sr{display:flex;gap:9px;align-items:flex-start;background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:9px 12px;margin:6px 0;font-size:12px;line-height:1.5}
+.sn{font-family:var(--mono);font-size:9px;font-weight:700;color:#000;border-radius:3px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.obj-badge-sm{display:inline-block;margin-left:8px;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2);vertical-align:middle}
+#terminal{height:190px;border-top:1px solid var(--b1);background:var(--bg);display:flex;flex-direction:column;flex-shrink:0}
+#term-bar{padding:6px 10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:5px;background:var(--s1);flex-shrink:0}
+.tdot{width:8px;height:8px;border-radius:50%}
+#term-out{flex:1;overflow-y:auto;padding:8px 12px;font-family:var(--mono);font-size:11px;line-height:1.65;color:var(--t3)}
+.tok{color:var(--green)}.twrn{color:var(--gold)}.terr{color:var(--red)}.tcmd{color:#5eead4}.tdim{color:var(--t4)}.tinf{color:var(--blue)}
+#term-in-row{display:flex;border-top:1px solid var(--b1);flex-shrink:0}
+#term-prompt{font-family:var(--mono);font-size:12px;color:var(--green);padding:7px 0 7px 12px;user-select:none}
+#term-field{flex:1;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:12px;color:var(--t1);padding:7px 10px}
+#lab-right{display:flex;flex-direction:column;overflow:hidden}
+#ed-head{background:var(--s1);border-bottom:1px solid var(--b1);padding:0 12px;display:flex;align-items:center;justify-content:space-between;height:38px;flex-shrink:0}
+#ed-fname{font-family:var(--mono);font-size:11px;color:var(--t2)}
+.btn-hint{background:transparent;border:1px solid var(--b2);color:var(--t3);font-size:11px;padding:4px 10px;border-radius:5px;transition:all .15s}
+.btn-hint:hover{color:var(--t2)}
+.btn-check{border:none;font-size:11px;font-weight:700;color:#000;padding:4px 14px;border-radius:5px;transition:filter .15s}
 .btn-check:hover{filter:brightness(1.1)}
-.btn-check:disabled{opacity:.4;cursor:not-allowed}
-#editor{
-  flex:1;background:var(--code);color:#6a8ea8;
-  font-family:'DM Mono',monospace;font-size:12px;line-height:1.75;
-  padding:14px 16px;border:none;outline:none;resize:none;width:100%;tab-size:2;
-  overflow-y:auto;
-}
-.vbar{
-  padding:8px 12px;border-top:1px solid var(--b1);background:var(--s1);
-  font-size:11.5px;display:flex;align-items:flex-start;gap:7px;flex-shrink:0;min-height:38px;flex-wrap:wrap;
-}
-.v-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+#editor{flex:1;background:var(--bg);color:#6a8ea8;font-family:var(--mono);font-size:12px;line-height:1.75;padding:14px;border:none;outline:none;resize:none;width:100%;tab-size:2}
+#vbar{background:var(--s1);border-top:1px solid var(--b1);padding:8px 14px;display:flex;align-items:flex-start;gap:7px;min-height:38px;flex-shrink:0;font-size:12px}
+.vdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
 
-/* ════════════════════════════════════
-   QUIZ PANEL
-════════════════════════════════════ */
-.quiz-pnl{flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px}
-.qw{width:100%;max-width:600px;display:flex;flex-direction:column;gap:14px}
-.qdomain-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.qdc{
-  background:var(--s1);border:1px solid var(--b2);border-radius:10px;
-  padding:13px 16px;cursor:pointer;transition:all .14s;
-}
-.qdc:hover{border-color:var(--b3);background:var(--s2)}
-.qdc-icon{font-size:18px;margin-bottom:4px}
-.qdc-title{font-size:13px;font-weight:600;margin-bottom:2px}
-.qdc-sub{font-size:11px;color:var(--t2)}
-.qdc-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);margin-top:5px}
-.qprog{height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
-.qprog-f{height:100%;border-radius:2px;transition:width .3s}
-.qcard{
-  background:var(--s1);border:1px solid var(--b2);border-radius:10px;
-  padding:20px;animation:fu .25s ease forwards;opacity:0;
-}
-.q-meta-row{display:flex;gap:6px;margin-bottom:8px;font-size:10px;flex-wrap:wrap}
-.q-dtag{font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid}
-.q-txt{font-size:15px;font-weight:600;line-height:1.45;margin-bottom:16px;color:var(--t1)}
-.q-txt code{font-family:'DM Mono',monospace;font-size:12px;padding:2px 5px;border-radius:4px;background:rgba(90,130,170,.15);color:#7fb8d8}
-.q-opts{display:flex;flex-direction:column;gap:6px}
-.qo{
-  background:var(--s2);border:1px solid var(--b2);border-radius:7px;
-  padding:11px 13px;font-size:13px;color:var(--t1);cursor:pointer;
-  transition:all .14s;text-align:left;font-family:'DM Sans',sans-serif;
-  display:flex;align-items:flex-start;gap:9px;
-}
-.qo:hover:not(:disabled){border-color:var(--b3);background:var(--s3)}
-.qo:disabled{cursor:not-allowed}
-.qo.ok{border-color:var(--green);background:var(--gd);color:var(--green)}
-.qo.bad{border-color:var(--red);background:var(--rd);color:var(--red)}
-.q-let{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--t3);flex-shrink:0;margin-top:1px}
-.qo.ok .q-let{color:var(--green)}.qo.bad .q-let{color:var(--red)}
-.qfb{display:none;margin-top:10px;padding:10px 13px;border-radius:7px;font-size:12.5px;line-height:1.6;animation:fu .2s ease forwards;opacity:0}
-.qfb.show{display:block}
-.qfb.ok{background:var(--gd);border:1px solid rgba(34,197,94,.25);color:#86efac}
-.qfb.bad{background:var(--rd);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
-.qfb code{font-family:'DM Mono',monospace;font-size:10.5px;background:rgba(90,130,170,.15);color:#7fb8d8;padding:1px 4px;border-radius:3px}
-.btn-qn{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;
-  border:none;padding:9px 20px;border-radius:6px;cursor:pointer;
-  transition:all .14s;display:none;margin-top:8px;color:#000;
-}
-.btn-qn.show{display:inline-block}
-.btn-qn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.sc{background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:32px;text-align:center;animation:fu .35s ease forwards;opacity:0}
-.sc-em{font-size:40px;margin-bottom:8px}
-.sc-num{font-size:48px;font-weight:900;line-height:1;margin-bottom:4px}
-.sc-lbl{font-size:13px;color:var(--t2);margin-bottom:14px}
-.sc-bk{background:var(--s2);border:1px solid var(--b1);border-radius:7px;padding:10px;margin-bottom:14px;text-align:left;font-size:12px;line-height:1.7;color:var(--t2)}
-.sc-bk strong{color:var(--t1)}
-.btn-retry{font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;background:transparent;color:var(--t2);border:1px solid var(--b2);padding:8px 18px;border-radius:6px;cursor:pointer;transition:all .13s;margin-right:6px}
-.btn-retry:hover{border-color:var(--t2);color:var(--t1)}
+/* QUIZ */
+#panel-quiz{overflow-y:auto;align-items:center;padding:28px 20px;flex-direction:column}
+#quiz-wrap{width:100%;max-width:620px;display:flex;flex-direction:column;gap:14px}
+.qcg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qcc{background:var(--s2);border:1px solid var(--b2);border-radius:var(--rad-lg);padding:16px 18px;cursor:pointer;transition:all .15s}
+.qcc:hover{background:var(--s3);transform:translateY(-1px);box-shadow:var(--shadow)}
+.qcc-lbl{font-family:var(--mono);font-size:10px;font-weight:700;margin-bottom:3px}
+.qcc-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.qcc-cnt{font-size:11px;color:var(--t3)}
+.qpb{height:3px;background:var(--b1);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.qpf{height:100%;border-radius:2px;transition:width .4s}
+.qcard{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-lg);padding:22px 24px;animation:fi .25s ease}
+.qmeta{font-family:var(--mono);font-size:9px;color:var(--t3);margin-bottom:10px}
+.qtxt{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:18px;color:var(--t1)}
+.qtxt code{font-family:var(--mono);font-size:12px;background:rgba(59,130,246,.1);color:#7fb8d8;padding:2px 6px;border-radius:4px}
+.qopts{display:flex;flex-direction:column;gap:7px}
+.qopt{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px 14px;font-size:13px;color:var(--t1);cursor:pointer;transition:all .14s;text-align:left;display:flex;gap:10px;align-items:flex-start;width:100%}
+.qopt:hover:not(:disabled){background:var(--s3)}
+.qopt:disabled{cursor:not-allowed}
+.qopt.correct{border-color:var(--green);background:rgba(34,197,94,.08);color:var(--green)}
+.qopt.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:var(--red)}
+.qltr{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--t3);flex-shrink:0;margin-top:1px}
+.qopt.correct .qltr{color:var(--green)}.qopt.wrong .qltr{color:var(--red)}
+.qexp{display:none;margin-top:12px;padding:12px 14px;border-radius:7px;font-size:12.5px;line-height:1.6}
+.qexp.show{display:block;animation:fi .2s ease}
+.qexp.correct{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.qexp.wrong{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.btn-nq{display:none;border:none;font-weight:700;font-size:13px;padding:10px 22px;border-radius:6px;color:#000;margin-top:8px}
+.btn-nq.show{display:inline-block}
+.scard{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-lg);padding:36px;text-align:center;animation:fi .35s ease}
+.scard-em{font-size:44px;margin-bottom:8px}
+.scard-num{font-size:52px;font-weight:900;line-height:1;margin-bottom:4px}
+.scard-lbl{font-size:13px;color:var(--t2);margin-bottom:18px}
+.scard-bk{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:12px 16px;margin-bottom:18px;text-align:left;font-size:12px;line-height:1.9;color:var(--t2)}
+.scard-bk strong{color:var(--t1)}
+.btn-retry{background:transparent;border:1px solid var(--b2);color:var(--t2);padding:9px 18px;border-radius:6px;font-size:12px;font-weight:600;margin-right:8px}
+.btn-retry:hover{color:var(--t1)}
+.btn-again{border:none;font-weight:700;font-size:12px;padding:9px 18px;border-radius:6px;color:#000}
 
-/* ══ MOBILE ══ */
-@media (max-width: 700px) {
-  html,body{overflow:auto}
-  .shell{flex-direction:column;height:auto;min-height:100vh}
-  .rail{
-    width:100%;flex-direction:row;height:auto;
-    padding:8px 10px;gap:6px;overflow-x:auto;
-    border-right:none;border-bottom:1px solid var(--b1);
-    flex-shrink:0;
-  }
-  .rail-logo{display:none}
-  .rail-div{display:none}
-  .rb{width:auto;height:36px;padding:0 10px;border-radius:7px;flex-shrink:0}
-  .rb-dot{display:none}
-  .rb-label{font-size:10px}
-  .rb-tip{display:none!important}
-  .ssb{width:100%;border-right:none;border-bottom:1px solid var(--b1);max-height:160px}
-  .ssb-list{display:flex;flex-wrap:wrap;gap:4px;padding:6px;overflow-y:auto}
-  .sg{width:100%}
-  .sg-label{font-size:9px;padding:4px 6px 2px}
-  .si{padding:5px 8px;font-size:11px}
-  .main{min-height:0;flex:1}
-  .tbar{overflow-x:auto;padding:0 10px}
-  .tb{padding:0 10px;font-size:11px}
-  .panels{overflow:auto}
-  .pnl{height:auto;overflow:visible}
-  .learn-pnl{flex-direction:column}
-  .lc{padding:16px;max-width:100%}
-  .lc-h1{font-size:16px}
-  .ai-pane{width:100%;border-left:none;border-top:1px solid var(--b1);height:300px}
-  .lab-pnl{overflow:auto}
-  .lab-body{grid-template-columns:1fr;height:auto}
-  .lab-left{border-right:none;border-bottom:1px solid var(--b1)}
-  .term-wrap{height:140px}
-  .lab-right{min-height:280px}
-  #editor{min-height:220px}
-  .quiz-pnl{padding:16px 12px}
-  .qdomain-grid{grid-template-columns:1fr}
-  .cb{font-size:10.5px}
-  .ibox p,.ibox li{font-size:12px}
-  .tip,.warn{font-size:12px}
-}
-
-.ldots{display:flex;gap:4px;align-items:center;padding:16px 0}
-.ldots span{width:6px;height:6px;border-radius:50%;animation:bounce 1s infinite}
-.ldots span:nth-child(2){animation-delay:.15s}
-.ldots span:nth-child(3){animation-delay:.3s}
-@keyframes bounce{0%,80%,100%{transform:scale(.8);opacity:.35}40%{transform:scale(1.2);opacity:1}}
+/* EMPTY */
+#empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center;color:var(--t3)}
+.empty-icon{font-size:48px;opacity:.4}
+.empty-title{font-size:19px;font-weight:700;color:var(--t2)}
+.empty-sub{font-size:13px;max-width:300px;line-height:1.6}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.chip{font-family:var(--mono);font-size:10px;background:var(--s2);border:1px solid var(--b2);padding:4px 11px;border-radius:20px;color:var(--t3)}
 </style>
 </head>
 <body>
-<div style="background:#0a0f1a;border-bottom:1px solid #1a2535;padding:7px 14px;display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#2a3d52;flex-shrink:0">
-  <span>🔑 Tutor &amp; Quiz API Key:</span>
-  <input id="apikey" type="password" placeholder="sk-ant-... (optional — Learn &amp; Labs work without key)"
-    style="background:#06080d;border:1px solid #213040;border-radius:4px;color:#ddeaf8;font-family:inherit;font-size:11px;padding:4px 8px;outline:none;width:320px"/>
-  <button id="save-btn" style="background:#8b5cf6;border:none;color:#000;font-family:inherit;font-weight:700;font-size:11px;padding:4px 12px;border-radius:4px;cursor:pointer">Save</button>
-  <span id="key-status" style="color:#2a3d52">Not set</span>
-  <span style="margin-left:auto;font-size:10px">Learn &amp; Labs work without a key</span>
-</div>
-<div class="shell">
-
-<!-- ══ CERT RAIL ══ -->
-<div class="rail">
-  <div class="rail-logo">CERT<br>LAB</div>
-  <div class="rail-div"></div>
-  <!-- Cert buttons filled by JS -->
-  <div id="rail-btns"></div>
-</div>
-
-<!-- ══ SECTION SIDEBAR ══ -->
-<div class="ssb">
-  <div class="ssb-head">
-    <div class="ssb-cert-name" id="ssb-name">Select a cert</div>
-    <div class="ssb-meta" id="ssb-meta">—</div>
-    <div class="ssb-prog-bar"><div class="ssb-prog-fill" id="ssb-prog" style="width:0%"></div></div>
-  </div>
-  <div class="ssb-list" id="ssb-list"></div>
-</div>
-
-<!-- ══ MAIN ══ -->
-<div class="main">
-  <div class="tbar">
-    <button class="tb on" onclick="switchTab('learn',this)" id="tab-learn">📖 Learn</button>
-    <button class="tb" onclick="switchTab('lab',this)" id="tab-lab">🔬 Lab</button>
-    <button class="tb" onclick="switchTab('quiz',this)" id="tab-quiz">🎯 Quiz</button>
-    <div class="tbar-r">
-      <span class="done-chip" id="done-chip">0/0 sections</span>
-      <span class="xp-chip" id="xp-chip">0 XP</span>
+<div id="app">
+  <div id="topbar">
+    <div class="logo">CERT<span>LAB</span> <span style="color:var(--t4);font-size:9px">PRO</span></div>
+    <div class="key-lbl">🔑</div>
+    <input id="apikey" type="password" placeholder="Anthropic API key (Tutor &amp; Quiz only — Learn &amp; Labs are offline)"/>
+    <button id="btn-save-key">Save</button>
+    <span id="key-status">Not set</span>
+    <div class="tb-r">
+      <div class="prog-wrap">
+        <div class="prog-lbl" id="tb-prog-lbl">0/0</div>
+        <div class="prog-bar"><div class="prog-fill" id="tb-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div id="tb-xp">0 XP</div>
     </div>
   </div>
 
-  <div class="panels">
-    <!-- LEARN -->
-    <div class="pnl learn-pnl on" id="pnl-learn">
-      <div class="lc" id="learn-content">
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;color:var(--t3);text-align:center;gap:12px">
-          <div style="font-size:36px">🎓</div>
-          <div style="font-family:'Unbounded',sans-serif;font-size:16px;color:var(--t2)">Pick a certification</div>
-          <div style="font-size:13px">Select from the left rail, then choose a section to begin.</div>
-        </div>
+  <div id="main">
+    <div id="rail"></div>
+
+    <div id="sidebar">
+      <div id="sb-head">
+        <div id="sb-name" style="color:var(--t3)">Select a cert</div>
+        <div id="sb-meta">Choose from the left rail</div>
+        <div id="sb-bar"><div id="sb-fill" style="width:0%"></div></div>
       </div>
-      <div class="ai-pane">
-        <div class="ai-h"><div class="ai-pulse"></div>AI Exam Tutor</div>
-        <div class="ai-msgs" id="ai-msgs">
-          <div class="am b" style="animation-delay:.1s">Hey Cecil 👋 Pick any cert section and I'll help you understand it — ask for exam questions, deeper explanations, or "explain like I'm on the job."</div>
-        </div>
-        <div class="ai-foot">
-          <input class="ai-in" id="ai-in" placeholder="Ask about this section…" onkeydown="if(event.key==='Enter')sendTutor()"/>
-          <button class="ai-go" id="ai-go" onclick="sendTutor()" style="background:var(--t2)">→</button>
-        </div>
-      </div>
+      <div id="sb-list"></div>
     </div>
 
-    <!-- LAB -->
-    <div class="pnl lab-pnl" id="pnl-lab">
-      <div class="lab-top" id="lab-top">
-        <span class="lt-label">Section Lab:</span>
-        <span style="font-size:12px;color:var(--t3)">← Choose a cert and section first</span>
+    <div id="content">
+      <div id="tabs">
+        <button class="tab-btn active" data-tab="learn">📖 Learn</button>
+        <button class="tab-btn" data-tab="lab">🔬 Lab</button>
+        <button class="tab-btn" data-tab="quiz">🎯 Quiz</button>
       </div>
-      <div class="lab-body">
-        <div class="lab-left">
-          <div class="lab-tabs">
-            <button class="lt on" onclick="switchLabTab('inst',this)">📋 Instructions</button>
-            <button class="lt" onclick="switchLabTab('ent',this)">🏢 Real World</button>
-            <button class="lt" onclick="switchLabTab('tips',this)">🎯 Exam Tips</button>
-          </div>
-          <div class="lab-inst" id="lab-inst"><p style="color:var(--t3)">Select a cert section to load its lab.</p></div>
-          <div class="term-wrap">
-            <div class="term-h">
-              <div class="td" style="background:#ef4444"></div>
-              <div class="td" style="background:#f59e0b"></div>
-              <div class="td" style="background:#22c55e"></div>
-              <span style="margin-left:6px">Simulated Terminal</span>
-            </div>
-            <div class="term-out" id="term-out"><span class="tdim">Ready. Type commands below ↓</span></div>
-            <div class="term-in-row">
-              <span class="t-prompt">$&nbsp;</span>
-              <input class="t-in" id="t-in" placeholder="terraform init / systemctl status / kubectl get pods …" onkeydown="if(event.key==='Enter')runCmd()"/>
-            </div>
-          </div>
-        </div>
-        <div class="lab-right">
-          <div class="ed-h">
-            <span class="ed-fname" id="ed-fname">main.tf</span>
-            <div class="ed-acts">
-              <button class="btn-hint" onclick="showHint()">💡 Hint</button>
-              <button class="btn-check" id="btn-check" onclick="checkLab()">✓ Check</button>
-            </div>
-          </div>
-          <textarea id="editor" spellcheck="false"></textarea>
-          <div class="vbar" id="vbar">
-            <div class="v-dot" style="background:var(--t3)"></div>
-            <span style="color:var(--t3)">Write your solution, then click Check</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      <div id="panels">
 
-    <!-- QUIZ -->
-    <div class="pnl quiz-pnl" id="pnl-quiz">
-      <div class="qw" id="quiz-wrap">
-        <div style="text-align:center;color:var(--t3);padding:40px 0">
-          <div style="font-size:32px;margin-bottom:10px">🎯</div>
-          <div style="font-size:14px">Select a certification to start a quiz</div>
+        <div class="panel active" id="panel-learn">
+          <div id="learn-scroll">
+            <div id="learn-content">
+              <div id="empty">
+                <div class="empty-icon">🎓</div>
+                <div class="empty-title">CertLab Pro</div>
+                <div class="empty-sub">Enterprise certification learning. Select a cert from the rail to begin.</div>
+                <div class="chips">
+                  <span class="chip">Terraform</span><span class="chip">AZ-500</span><span class="chip">RHCSA</span>
+                  <span class="chip">AZ-104</span><span class="chip">Security+</span><span class="chip">Network+</span>
+                  <span class="chip">CKA</span><span class="chip">AWS SAA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="tutor-pane">
+            <div id="tutor-head"><div class="t-dot"></div><div class="t-lbl">AI Tutor</div></div>
+            <div id="tutor-msgs">
+              <div class="msg msg-bot">Hi Cecil 👋 Select a section and ask me anything — exam questions, real-world context, or how this shows up in interviews. <span style="color:var(--t4);font-size:10px">(Needs API key)</span></div>
+            </div>
+            <div id="tutor-foot">
+              <input id="tutor-input" placeholder="Ask about this section…"/>
+              <button id="tutor-send">↑</button>
+            </div>
+          </div>
         </div>
+
+        <div class="panel" id="panel-lab">
+          <div id="lab-head">
+            <div id="lab-title">Select a section with a LAB badge</div>
+            <div id="lab-obj" style="display:none" class="obj-badge"></div>
+          </div>
+          <div id="lab-body">
+            <div id="lab-left">
+              <div id="lab-tabs">
+                <button class="lt active" data-lt="inst">📋 Instructions</button>
+                <button class="lt" data-lt="ent">🏢 Real World</button>
+                <button class="lt" data-lt="tips">🎯 Exam Tips</button>
+              </div>
+              <div id="lab-inst"><p style="color:var(--t3)">Select a section to load the lab.</p></div>
+              <div id="terminal">
+                <div id="term-bar">
+                  <div class="tdot" style="background:#ef4444"></div>
+                  <div class="tdot" style="background:#f59e0b"></div>
+                  <div class="tdot" style="background:#22c55e"></div>
+                  <span style="font-family:var(--mono);font-size:9px;color:var(--t4);margin-left:6px">Terminal Simulator</span>
+                </div>
+                <div id="term-out"><span class="tdim">Type a command and press Enter ↵</span></div>
+                <div id="term-in-row">
+                  <span id="term-prompt">$ </span>
+                  <input id="term-field" autocomplete="off" spellcheck="false" placeholder="command…"/>
+                </div>
+              </div>
+            </div>
+            <div id="lab-right">
+              <div id="ed-head">
+                <span id="ed-fname">—</span>
+                <div style="display:flex;gap:6px">
+                  <button class="btn-hint" id="btn-hint">💡 Hint</button>
+                  <button class="btn-check" id="btn-check">✓ Check</button>
+                </div>
+              </div>
+              <textarea id="editor" spellcheck="false" autocomplete="off"></textarea>
+              <div id="vbar">
+                <div class="vdot" style="background:var(--t4)"></div>
+                <span style="color:var(--t3)">Write your solution then click Check</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-quiz">
+          <div id="quiz-wrap">
+            <div style="text-align:center;padding:16px 0 8px">
+              <div style="font-size:13px;font-weight:700;color:var(--t2)">Select a certification to quiz</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:3px">Questions drawn from official exam objectives</div>
+            </div>
+            <div class="qcg" id="quiz-grid"></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
-</div>
-
 <script>
-/* ════════════════════════════════════════════════════════════
-   CERTIFICATION DATA
-════════════════════════════════════════════════════════════ */
+var API_KEY='';
+var activeCert=null,activeSection=null,completed=new Set(),xp=0;
+var tutorHistory=[],labTab='inst',quizState=null;
+
+/* ── KEY ── */
+function saveKey(){
+  var k=document.getElementById('apikey').value.trim();
+  if(k.length>10){API_KEY=k;document.getElementById('key-status').textContent='✓ Saved';document.getElementById('key-status').style.color='var(--green)';document.getElementById('apikey').value='';}
+  else{document.getElementById('key-status').textContent='Too short';document.getElementById('key-status').style.color='var(--red)';}
+}
+function aHdr(){return{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':API_KEY};}
+
+/* ── DATA ── */
 const CERTS = {
   tf:{
     id:'tf',label:'TA-004',name:'Terraform Associate',version:'TA-004',
@@ -2187,803 +2017,284 @@ Routing Policy: `,
   }
 };
 
-/* ════════════════════════════════════════════════════════════
-   APP STATE
-════════════════════════════════════════════════════════════ */
-let activeCert = null;
-let activeSection = null;
-let activeLab = null;
-let activeLabTab = 'inst';
-let tutorHistory = [];
-let xp = 0;
-let completed = new Set();
-let quizState = { cert:null, qs:[], idx:0, score:0, wrong:[] };
 
-/* ════════════════════════════════════════════════════════════
-   BUILD CERT RAIL
-════════════════════════════════════════════════════════════ */
-var API_KEY='';
-function saveKey(){
-  var k=document.getElementById('apikey').value.trim();
-  if(k.length>10){
-    API_KEY=k;
-    document.getElementById('key-status').textContent='Key saved ✓';
-    document.getElementById('key-status').style.color='#22c55e';
-    document.getElementById('apikey').value='';
-  } else {
-    document.getElementById('key-status').textContent='Key too short';
-    document.getElementById('key-status').style.color='#ef4444';
-  }
-}
-function apiHdr(){
-  var h={'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
-  if(API_KEY)h['x-api-key']=API_KEY;
-  return h;
-}
-
+/* ── RAIL ── */
 function buildRail(){
-  const c = document.getElementById('rail-btns');
-  c.innerHTML = '';
-  Object.values(CERTS).forEach(cert=>{
-    const btn = document.createElement('button');
-    btn.className = 'rb';
-    btn.id = 'rb-'+cert.id;
-    btn.innerHTML = `<div class="rb-dot" style="background:${cert.dot}"></div><div class="rb-label">${cert.label}</div><div class="rb-tip">${cert.name}</div>`;
-    btn.addEventListener('click', ()=>selectCert(cert.id));
-    c.appendChild(btn);
+  var r=document.getElementById('rail');r.innerHTML='';
+  Object.values(CERTS).forEach(function(c){
+    var b=document.createElement('button');b.className='rb';b.id='rb-'+c.id;b.style.color=c.color;
+    b.innerHTML='<div class="rb-dot" style="background:'+c.dot+'"></div><div class="rb-lbl">'+c.label+'</div><div class="rb-tip">'+c.name+'</div>';
+    b.addEventListener('click',function(){selCert(c.id);});
+    r.appendChild(b);
   });
 }
-buildRail();
 
-/* ════════════════════════════════════════════════════════════
-   SELECT CERT
-════════════════════════════════════════════════════════════ */
-function selectCert(id){
-  activeCert = CERTS[id];
-  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('sel'));
-  const rb = document.getElementById('rb-'+id);
-  rb.classList.add('sel');
-  rb.style.background = activeCert.dim;
-  rb.style.borderColor = activeCert.border;
-  // sidebar
-  document.getElementById('ssb-name').textContent = activeCert.name;
-  document.getElementById('ssb-name').style.color = activeCert.color;
-  document.getElementById('ssb-meta').textContent = activeCert.exam;
-  document.getElementById('ssb-prog').style.background = activeCert.color;
-  buildSidebar();
-  // auto-select first section
-  const firstSection = activeCert.sections[0]?.items[0];
-  if(firstSection) selectSection(firstSection.id);
-  updateProgress();
-  renderQuizForCert();
+/* ── SELECT CERT ── */
+function selCert(id){
+  activeCert=CERTS[id];if(!activeCert)return;
+  document.querySelectorAll('.rb').forEach(function(b){b.classList.remove('on');});
+  var rb=document.getElementById('rb-'+id);if(rb)rb.classList.add('on');
+  buildSidebar();updateProg();buildQuizGrid();
+  var all=getAll();if(all.length)selSection(all[0].id);
 }
+function getAll(){if(!activeCert)return[];var a=[];activeCert.sections.forEach(function(g){g.items.forEach(function(i){a.push(i);});});return a;}
 
-/* ════════════════════════════════════════════════════════════
-   BUILD SIDEBAR
-════════════════════════════════════════════════════════════ */
+/* ── SIDEBAR ── */
 function buildSidebar(){
-  const list = document.getElementById('ssb-list');
-  let html = '';
-  activeCert.sections.forEach(grp=>{
-    html += `<div class="sg"><div class="sg-label">${grp.group}</div>`;
-    grp.items.forEach(item=>{
-      const done = completed.has(item.id);
-      html += `<div class="si${done?' done':''}" id="si-${item.id}" onclick="selectSection('${item.id}')">
-        <div class="si-dot" style="${done?'':'background:'+activeCert.color+'40'}"></div>
-        <div class="si-txt">${item.label}</div>
-        ${item.lab?`<div class="si-lab-tag" style="color:${activeCert.color};border-color:${activeCert.color}40;background:${activeCert.dim}">LAB</div>`:''}
-      </div>`;
+  if(!activeCert)return;var c=activeCert;
+  document.getElementById('sb-name').textContent=c.name;
+  document.getElementById('sb-name').style.color=c.color;
+  document.getElementById('sb-meta').textContent=c.exam;
+  document.getElementById('sb-fill').style.background=c.color;
+  var list=document.getElementById('sb-list');list.innerHTML='';
+  c.sections.forEach(function(grp){
+    var gh=document.createElement('div');gh.className='sb-grp';gh.textContent=grp.group;list.appendChild(gh);
+    grp.items.forEach(function(item){
+      var el=document.createElement('div');
+      el.className='sb-item'+(completed.has(item.id)?' done':'');
+      el.id='si-'+item.id;
+      el.innerHTML='<div class="sb-dot"></div><div class="sb-txt">'+item.label+'</div>'+(item.lab?'<div class="sb-badge" style="color:'+c.color+';border-color:'+c.color+'30">LAB</div>':'');
+      el.addEventListener('click',function(){selSection(item.id);});
+      list.appendChild(el);
     });
-    html += '</div>';
   });
-  list.innerHTML = html;
 }
 
-function updateProgress(){
-  if(!activeCert) return;
-  const allItems = activeCert.sections.flatMap(g=>g.items);
-  const done = allItems.filter(i=>completed.has(i.id)).length;
-  const pct = allItems.length ? (done/allItems.length*100) : 0;
-  document.getElementById('ssb-prog').style.width = pct+'%';
-  document.getElementById('done-chip').textContent = done+'/'+allItems.length+' sections';
-  document.getElementById('xp-chip').textContent = xp+' XP';
+/* ── PROGRESS ── */
+function updateProg(){
+  var all=getAll(),done=all.filter(function(i){return completed.has(i.id);}).length;
+  var pct=all.length?Math.round(done/all.length*100):0;
+  document.getElementById('tb-prog-lbl').textContent=done+'/'+all.length;
+  document.getElementById('tb-prog-fill').style.width=pct+'%';
+  document.getElementById('sb-fill').style.width=pct+'%';
+  document.getElementById('tb-xp').textContent=xp+' XP';
 }
 
-/* ════════════════════════════════════════════════════════════
-   SELECT SECTION
-════════════════════════════════════════════════════════════ */
-function selectSection(id){
-  activeSection = null;
-  activeCert.sections.forEach(g=>g.items.forEach(i=>{ if(i.id===id) activeSection=i; }));
-  if(!activeSection) return;
-  document.querySelectorAll('.si').forEach(el=>el.classList.remove('active'));
-  const el = document.getElementById('si-'+id);
-  if(el) el.classList.add('active');
-  renderLearn();
-  if(activeSection.lab) loadLab();
-  tutorHistory = [];
-  const msgs = document.getElementById('ai-msgs');
-  msgs.innerHTML = '';
-  addBot(`On: <strong style="color:${activeCert.color}">${activeCert.name} — ${activeSection.label}</strong>. Ask me anything — exam questions, deeper explanations, or "how does this work in real life?"`);
+/* ── SELECT SECTION ── */
+function selSection(id){
+  if(!activeCert)return;
+  activeSection=null;
+  activeCert.sections.forEach(function(g){g.items.forEach(function(i){if(i.id===id)activeSection=i;});});
+  if(!activeSection)return;
+  document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active');});
+  var el=document.getElementById('si-'+id);
+  if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}
+  renderLearn();loadLab();
+  tutorHistory=[];
+  var msgs=document.getElementById('tutor-msgs');msgs.innerHTML='';
+  addBot('On: <strong style="color:'+activeCert.color+'">'+activeCert.name+' — '+activeSection.label+'</strong>. Ask me anything — exam questions, deeper explanations, or how this comes up in real interviews.');
 }
 
-/* ════════════════════════════════════════════════════════════
-   RENDER LEARN
-════════════════════════════════════════════════════════════ */
+/* ── RENDER LEARN ── */
 function renderLearn(){
-  const s = activeSection;
-  const l = s.learn;
-  const c = activeCert;
-  document.getElementById('learn-content').innerHTML = `
-    <div class="lc-crumb">${c.name} · ${c.version}</div>
-    <span class="lc-tag" style="color:${c.color};border-color:${c.color}40;background:${c.dim}">${l.tag}</span>
-    <span class="lc-wt">${l.weight}</span>
-    <h1 class="lc-h1">${l.title}</h1>
-    <p class="lc-sub">${l.sub}</p>
-    <div class="lc-body">${l.body}</div>
-    <div class="lc-nav">
-      <button class="btn-p" onclick="prevSection()">← Prev</button>
-      <button class="btn-n" style="background:${c.color}" onclick="completeSection()">Done & Next →</button>
-      ${s.lab?`<button class="btn-l" style="color:${c.color};border-color:${c.color}40" onclick="switchTab(\'lab\',document.getElementById(\'tab-lab\'))">🔬 Do the Lab →</button>`:''}
-    </div>`;
+  var s=activeSection,c=activeCert,l=s.learn;
+  if(!l){document.getElementById('learn-content').innerHTML='<p style="color:var(--t3);padding:20px">Content coming soon for: '+s.label+'</p>';return;}
+  var all=getAll(),idx=all.findIndex(function(i){return i.id===s.id;}),isLast=idx===all.length-1;
+  document.getElementById('learn-content').innerHTML=
+    '<div class="lc-crumb"><span>'+c.name+'</span><span style="color:var(--t4)"> › </span><span>'+(l.tag||s.label)+'</span></div>'+
+    '<div class="lc-meta"><span class="lc-tag" style="color:'+c.color+';border-color:'+c.color+'30;background:'+c.dim+'">'+(l.tag||'')+'</span>'+(l.weight?'<span class="lc-wt">'+l.weight+'</span>':'')+'</div>'+
+    '<h1 class="lc-h1">'+l.title+'</h1>'+
+    '<p class="lc-sub">'+l.sub+'</p>'+
+    '<div class="lc-body">'+l.body+'</div>'+
+    '<div class="lc-nav">'+
+      (idx>0?'<button class="btn-prev" onclick="prevSec()">← Prev</button>':'')+
+      '<button class="btn-next" style="background:'+c.color+'" onclick="completeSec()">'+(isLast?'✓ Complete':'Next →')+'</button>'+
+      (s.lab?'<button class="btn-lab-link" style="color:'+c.color+';border-color:'+c.color+'40" onclick="switchTab(\'lab\')">🔬 Do the Lab →</button>':'')+
+    '</div>';
+  document.getElementById('learn-scroll').scrollTop=0;
 }
+function completeSec(){
+  if(!activeSection)return;
+  if(!completed.has(activeSection.id)){completed.add(activeSection.id);xp+=20;
+    var el=document.getElementById('si-'+activeSection.id);
+    if(el){el.classList.add('done');el.querySelector('.sb-dot').style.background='var(--green)';}
+    updateProg();}
+  nextSec();
+}
+function nextSec(){var all=getAll(),idx=all.findIndex(function(i){return i.id===activeSection.id;});if(idx<all.length-1)selSection(all[idx+1].id);}
+function prevSec(){var all=getAll(),idx=all.findIndex(function(i){return i.id===activeSection.id;});if(idx>0)selSection(all[idx-1].id);}
 
-function completeSection(){
-  if(!activeSection) return;
-  completed.add(activeSection.id);
-  xp += 20;
-  const el = document.getElementById('si-'+activeSection.id);
-  if(el){ el.classList.add('done'); el.querySelector('.si-dot').style.background='var(--green)'; }
-  updateProgress();
-  nextSection();
-}
-function nextSection(){
-  const all = activeCert.sections.flatMap(g=>g.items);
-  const idx = all.findIndex(i=>i.id===activeSection?.id);
-  if(idx < all.length-1) selectSection(all[idx+1].id);
-}
-function prevSection(){
-  const all = activeCert.sections.flatMap(g=>g.items);
-  const idx = all.findIndex(i=>i.id===activeSection?.id);
-  if(idx > 0) selectSection(all[idx-1].id);
-}
-
-/* ════════════════════════════════════════════════════════════
-   LOAD LAB
-════════════════════════════════════════════════════════════ */
+/* ── LAB ── */
 function loadLab(){
-  if(!activeSection?.lab) return;
-  activeLab = activeSection.lab;
-  activeLabTab = 'inst';
-  document.getElementById('lab-inst').innerHTML = activeLab.inst;
-  document.getElementById('editor').value = activeLab.starter;
-  document.getElementById('ed-fname').textContent = activeLab.fname;
-  document.getElementById('term-out').innerHTML = '<span class="tdim">Ready. Try: '+Object.keys(activeLab.cmds||{}).slice(0,3).join(' / ')+'</span>';
-  document.getElementById('vbar').innerHTML = `<div class="v-dot" style="background:var(--t3)"></div><span style="color:var(--t3)">Write your solution, then click Check</span>`;
-  document.getElementById('btn-check').style.background = activeCert.color;
-  // Build lab topbar
-  const top = document.getElementById('lab-top');
-  top.innerHTML = `<span class="lt-label">Lab:</span>
-    <span style="font-size:12px;color:${activeCert.color};font-weight:600">${activeLab.title}</span>
-    <span class="obj-badge" style="margin-left:6px">${activeLab.obj}</span>`;
-  // Reset lab tabs
-  document.querySelectorAll('.lt').forEach(t=>t.classList.remove('on'));
-  document.querySelector('.lt').classList.add('on');
-}
-
-function switchLabTab(tab, btn){
-  activeLabTab = tab;
-  document.querySelectorAll('.lt').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-  if(!activeLab) return;
-  if(tab==='inst') document.getElementById('lab-inst').innerHTML = activeLab.inst;
-  else if(tab==='ent') document.getElementById('lab-inst').innerHTML = activeLab.ent;
-  else if(tab==='tips') document.getElementById('lab-inst').innerHTML = activeLab.tips;
-}
-
-function runCmd(){
-  const inp = document.getElementById('t-in');
-  const cmd = inp.value.trim();
-  if(!cmd) return;
-  inp.value = '';
-  const out = document.getElementById('term-out');
-  const cmdLine = document.createElement('div');
-  cmdLine.innerHTML = `<span class="tcmd">$ ${esc(cmd)}</span>`;
-  out.appendChild(cmdLine);
-  const cmds = activeLab?.cmds || {};
-  const res = cmds[cmd] || cmds[cmd.toLowerCase()];
-  if(res){
-    res.forEach((line,i)=>{
-      setTimeout(()=>{
-        const d = document.createElement('div');
-        d.className = line.startsWith('✅')?'tok':line.startsWith('+')?'tok':line.includes('error')||line.startsWith('-')?'terr':line.startsWith('Plan:')||line.includes('created')?'tinfo':'tdim';
-        d.textContent = line;
-        out.appendChild(d);
-        out.scrollTop = out.scrollHeight;
-      }, i*70);
-    });
-  } else if(cmd==='clear'){
-    out.innerHTML='';
-  } else {
-    const d=document.createElement('div');
-    d.className='twarn';
-    const avail = Object.keys(cmds);
-    d.textContent = `"${cmd}" not in sim. Try: ${avail.slice(0,4).join(' | ')}${avail.length>4?' | ...':''}`;
-    out.appendChild(d);
+  if(!activeSection)return;
+  var s=activeSection,c=activeCert,lab=s.lab;
+  document.getElementById('lab-title').textContent=s.label;
+  var badge=document.getElementById('lab-obj');
+  if(lab&&lab.obj){badge.textContent=lab.obj;badge.style.display='';}else{badge.style.display='none';}
+  if(lab){
+    document.getElementById('ed-fname').textContent=lab.fname||'solution';
+    document.getElementById('editor').value=lab.starter||'';
+    document.getElementById('btn-check').style.background=c.color;
+    showLabTab('inst');
+  }else{
+    document.getElementById('lab-inst').innerHTML='<p style="color:var(--t3);padding:8px 0">No lab for this section. Select a section with a <strong>LAB</strong> badge.</p>';
+    document.getElementById('editor').value='# No lab for this section';
   }
-  out.scrollTop = out.scrollHeight;
+  document.getElementById('vbar').innerHTML='<div class="vdot" style="background:var(--t4)"></div><span style="color:var(--t3)">Write your solution then click Check</span>';
+  document.getElementById('term-out').innerHTML='<span class="tdim">Type a command and press Enter ↵</span>';
 }
-
+function showLabTab(tab){
+  labTab=tab;
+  document.querySelectorAll('.lt').forEach(function(t){t.classList.remove('active');});
+  var btn=document.querySelector('.lt[data-lt="'+tab+'"]');if(btn)btn.classList.add('active');
+  if(!activeSection||!activeSection.lab)return;
+  var lab=activeSection.lab,map={inst:lab.inst,ent:lab.ent,tips:lab.tips};
+  document.getElementById('lab-inst').innerHTML=map[tab]||'<p style="color:var(--t3)">Coming soon.</p>';
+}
+function runCmd(cmd){
+  if(!cmd.trim())return;
+  var out=document.getElementById('term-out');
+  var line='<div><span class="tcmd">$ '+esc(cmd)+'</span></div>';
+  var cmds=activeSection&&activeSection.lab&&activeSection.lab.cmds||{};
+  var resp=cmds[cmd.trim()];
+  if(resp){
+    line+=resp.map(function(r){
+      var cls=r.startsWith('✅')?'tok':r.startsWith('❌')?'terr':r.startsWith('⚠')?'twrn':'tdim';
+      return'<div class="'+cls+'">'+esc(r)+'</div>';
+    }).join('');
+  }else{
+    line+='<div class="tdim">'+esc(cmd)+': not in simulator. Try a command from the instructions.</div>';
+  }
+  out.innerHTML+=line;out.scrollTop=out.scrollHeight;
+}
 function checkLab(){
-  const code = document.getElementById('editor').value;
-  const lab = activeLab;
-  if(!lab) return;
-  document.getElementById('btn-check').disabled = true;
-  let results = lab.checks.map(c=>({ ok:c.re.test(code), msg:c.msg }));
-  const pass = results.every(r=>r.ok);
-  const bar = document.getElementById('vbar');
-  if(pass){
-    bar.innerHTML = `<div class="v-dot" style="background:var(--green)"></div><span style="color:var(--green);font-weight:600">✅ All checks passed! +30 XP</span>`;
-    xp += 30;
-    updateProgress();
-    const out = document.getElementById('term-out');
-    const d=document.createElement('div');d.className='tok';d.textContent='✅ Lab validation passed.';out.appendChild(d);out.scrollTop=out.scrollHeight;
-  } else {
-    const ok = results.filter(r=>r.ok).map(r=>`<span style="color:var(--green)">✓ ${esc(r.msg)}</span>`).join(' · ');
-    const fail = results.filter(r=>!r.ok).map(r=>`<span style="color:var(--red)">✗ ${esc(r.msg)}</span>`).join(' · ');
-    bar.innerHTML = `<div class="v-dot" style="background:var(--red)"></div><div style="font-size:11px;line-height:1.7">${ok}${ok&&fail?' · ':''}${fail}</div>`;
+  var code=document.getElementById('editor').value;
+  var lab=activeSection&&activeSection.lab;if(!lab)return;
+  var ok=[],fail=[];
+  (lab.checks||[]).forEach(function(ck){
+    var re=ck.re||new RegExp(ck.pattern||'.');
+    (re.test(code)?ok:fail).push(ck.msg);
+  });
+  var vbar=document.getElementById('vbar'),c=activeCert;
+  if(fail.length===0&&ok.length>0){
+    vbar.innerHTML='<div class="vdot" style="background:var(--green)"></div><span style="color:var(--green)">✓ All '+ok.length+' checks passed! +20 XP</span>';
+    if(!completed.has(activeSection.id)){completed.add(activeSection.id);xp+=20;updateProg();}
+  }else{
+    vbar.innerHTML='<div class="vdot" style="background:var(--red)"></div><span style="color:var(--red)">'+fail.length+' check(s) failed: '+fail.join(', ')+'</span>';
   }
-  document.getElementById('btn-check').disabled = false;
 }
-
 function showHint(){
-  if(!activeLab?.hint) return;
-  const out = document.getElementById('term-out');
-  const d=document.createElement('div');d.className='tinfo';d.textContent='💡 Hint: '+activeLab.hint;out.appendChild(d);out.scrollTop=out.scrollHeight;
+  var lab=activeSection&&activeSection.lab;
+  if(lab&&lab.hint)document.getElementById('vbar').innerHTML='<div class="vdot" style="background:var(--gold)"></div><span style="color:var(--gold)">💡 '+esc(lab.hint)+'</span>';
 }
 
-/* ════════════════════════════════════════════════════════════
-   AI TUTOR
-════════════════════════════════════════════════════════════ */
+/* ── TUTOR ── */
 function addBot(html){
-  const msgs=document.getElementById('ai-msgs');
-  const d=document.createElement('div');d.className='am b';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+  var msgs=document.getElementById('tutor-msgs');
+  var d=document.createElement('div');d.className='msg msg-bot';d.innerHTML=html;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
 }
 function addUser(txt){
-  const msgs=document.getElementById('ai-msgs');
-  const d=document.createElement('div');
-  d.className='am u';
-  d.style.background=activeCert?activeCert.dim:'var(--s2)';
-  d.style.border=`1px solid ${activeCert?activeCert.border:'var(--b2)'}`;
-  d.style.color=activeCert?activeCert.color:'var(--t2)';
-  d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+  var msgs=document.getElementById('tutor-msgs');
+  var d=document.createElement('div');d.className='msg msg-user';d.textContent=txt;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
 }
 async function sendTutor(){
-  const inp=document.getElementById('ai-in');
-  const q=inp.value.trim();if(!q)return;
-  inp.value='';document.getElementById('ai-go').disabled=true;
+  var inp=document.getElementById('tutor-input'),q=inp.value.trim();if(!q)return;
+  if(!API_KEY){addBot('⚠️ Add your Anthropic API key in the bar at the top to use AI Tutor.');return;}
+  inp.value='';document.getElementById('tutor-send').disabled=true;
   addUser(q);tutorHistory.push({role:'user',content:q});
-  const certName = activeCert?.name||'IT certification';
-  const secLabel = activeSection?.label||'general topic';
-  const sys=`You are an expert certification exam tutor. The student is studying for: ${certName} (${activeCert?.version||''}).
-Current section: "${secLabel}".
-Exam details: ${activeCert?.exam||''}.
-Answer in 2-4 sentences. Use backticks for commands/code. Be exam-focused — mention what the exam specifically tests. The student (Cecil) has a background in IAM, system administration, and security. Don't over-explain basics.
-If asked for an exam question, provide one MCQ with 4 options, mark the correct answer, and explain why.`;
+  var typing=addBot('<div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>');
+  var sys='You are an expert certification exam tutor for '+(activeCert?activeCert.name:'IT certifications')+'. '+(activeSection?'Current topic: '+activeSection.label+'. ':'')+' Give concise, exam-focused answers under 200 words. Use backtick code for commands.';
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:sys,messages:tutorHistory})});
-    const data=await r.json();
-    const ans=data.content?.find(b=>b.type==='text')?.text||'';
-    tutorHistory.push({role:'assistant',content:ans});
-    addBot(fmtCode(ans));
-  }catch(e){addBot('⚠️ Connection error.')}
-  document.getElementById('ai-go').disabled=false;
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:aHdr(),body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:sys,messages:tutorHistory})});
+    var data=await res.json();
+    var reply=data.content&&data.content[0]?data.content[0].text:'No response.';
+    typing.innerHTML=reply.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+    tutorHistory.push({role:'assistant',content:reply});
+  }catch(e){typing.innerHTML='❌ '+e.message;}
+  document.getElementById('tutor-send').disabled=false;
 }
 
-/* ════════════════════════════════════════════════════════════
-   QUIZ
-════════════════════════════════════════════════════════════ */
-function renderQuizForCert(){
-  if(!activeCert) return;
-  // Collect all questions from this cert
-  const allQs = activeCert.sections.flatMap(g=>g.items.flatMap(i=>
-    (i.quiz||[]).map(q=>({...q, section:i.label}))
-  ));
-  if(!allQs.length){
-    document.getElementById('quiz-wrap').innerHTML=`<div style="text-align:center;color:var(--t3);padding:40px"><div style="font-size:28px">🎯</div><div style="margin-top:10px">Select a section and complete the Learn tab to unlock quiz questions.</div></div>`;
-    return;
-  }
-  // Build domain cards from sections
-  const sectionGroups = activeCert.sections.map(g=>({
-    label:g.group,
-    qs: g.items.flatMap(i=>(i.quiz||[]).map(q=>({...q,section:i.label})))
-  })).filter(g=>g.qs.length);
-
-  // Store quiz groups globally for safe onclick reference
-  window._quizGroups = sectionGroups;
-  window._quizAllQs = allQs;
-
-  let html=`<div class="quiz-hdr" style="margin-bottom:8px"><div style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700">${activeCert.name} Quiz</div><span class="xp-chip">${xp} XP</span></div>
-    <p style="font-size:12px;color:var(--t3);margin-bottom:12px">${activeCert.exam}</p>
-    <div class="qdomain-grid">`;
-  sectionGroups.forEach((g,i)=>{
-    html+=`<div class="qdc" data-qidx="${i}">
-      <div class="qdc-icon">${['📋','🔧','💾','🔐','🌐','⚙️'][i%6]}</div>
-      <div class="qdc-title">${g.label}</div>
-      <div class="qdc-sub">${g.qs.length} questions</div>
-    </div>`;
-  });
-  html+=`<div class="qdc" data-qidx="all">
-    <div class="qdc-icon">🎯</div>
-    <div class="qdc-title">Full Mixed Exam</div>
-    <div class="qdc-sub">${allQs.length} questions · all domains</div>
-  </div></div>`;
-  document.getElementById('quiz-wrap').innerHTML=html;
-  // Attach click events safely
-  document.querySelectorAll('.qdc').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const idx = el.dataset.qidx;
-      if(idx==='all') startQuiz(window._quizAllQs);
-      else startQuiz(window._quizGroups[parseInt(idx)].qs);
-    });
+/* ── QUIZ ── */
+function buildQuizGrid(){
+  var g=document.getElementById('quiz-grid');g.innerHTML='';
+  Object.values(CERTS).forEach(function(cert){
+    var qc=0;cert.sections.forEach(function(gr){gr.items.forEach(function(i){if(i.quiz)qc+=i.quiz.length;});});
+    if(!qc)return;
+    var card=document.createElement('div');card.className='qcc';
+    card.innerHTML='<div class="qcc-lbl" style="color:'+cert.color+'">'+cert.label+'</div><div class="qcc-name">'+cert.name+'</div><div class="qcc-cnt">'+qc+' practice questions</div>';
+    card.addEventListener('click',function(){startQuiz(cert.id);});
+    g.appendChild(card);
   });
 }
-
-function startQuiz(qs){
-  quizState={cert:activeCert,qs,idx:0,score:0,wrong:[]};
+function startQuiz(certId){
+  var cert=CERTS[certId];if(!cert)return;
+  var allQ=[];cert.sections.forEach(function(g){g.items.forEach(function(i){if(i.quiz)i.quiz.forEach(function(q){allQ.push(Object.assign({},q,{section:i.label}));});});});
+  for(var i=allQ.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=allQ[i];allQ[i]=allQ[j];allQ[j]=t;}
+  quizState={cert:cert,qs:allQ,idx:0,score:0,wrong:[],answered:false};
   renderQ();
 }
 function renderQ(){
-  const s=quizState;
-  if(s.idx>=s.qs.length){renderScore();return}
-  const q=s.qs[s.idx];
-  const pct=(s.idx/s.qs.length)*100;
-  const lets=['A','B','C','D'];
-  const c=s.cert;
-  document.getElementById('quiz-wrap').innerHTML=`
-    <div class="quiz-hdr"><div style="font-weight:700;font-size:15px">Q${s.idx+1}/${s.qs.length}</div><span class="xp-chip">${xp} XP</span></div>
-    <div class="qprog"><div class="qprog-f" style="width:${pct}%;background:${c.color}"></div></div>
-    <div class="qcard">
-      <div class="q-meta-row">
-        <span class="q-dtag" style="color:${c.color};border-color:${c.color}40;background:${c.dim}">${q.section||c.name}</span>
-      </div>
-      <div class="q-txt">${esc(q.q).replace(/`([^`]+)`/g,'<code>$1</code>')}</div>
-      <div class="q-opts">
-        ${q.opts.map((o,i)=>`<button class="qo" id="qo-${i}" data-oidx="${i}">
-          <span class="q-let">${lets[i]}</span>${esc(o)}
-        </button>`).join('')}
-      </div>
-      <div class="qfb" id="qfb"></div>
-      <button class="btn-qn" id="qnext" style="background:${c.color}">${s.idx===s.qs.length-1?'See Results →':'Next →'}</button>
-    </div>`;
-  document.querySelectorAll('.qo').forEach(btn=>{
-    btn.addEventListener('click',()=>pickQ(parseInt(btn.dataset.oidx)));
+  var s=quizState,wrap=document.getElementById('quiz-wrap');
+  if(s.idx>=s.qs.length){renderScore();return;}
+  var q=s.qs[s.idx],pct=Math.round(s.idx/s.qs.length*100),L=['A','B','C','D','E'];
+  wrap.innerHTML=
+    '<div class="qpb"><div class="qpf" style="width:'+pct+'%;background:'+s.cert.color+'"></div></div>'+
+    '<div style="font-family:var(--mono);font-size:10px;color:var(--t3)">'+(s.idx+1)+' / '+s.qs.length+' — '+s.cert.label+'</div>'+
+    '<div class="qcard">'+
+      '<div class="qmeta">'+(q.section||'')+'</div>'+
+      '<div class="qtxt">'+q.q+'</div>'+
+      '<div class="qopts">'+q.opts.map(function(o,i){return'<button class="qopt" data-i="'+i+'"><span class="qltr">'+L[i]+'</span><span>'+o+'</span></button>';}).join('')+'</div>'+
+      '<div class="qexp" id="qexp"></div>'+
+      '<button class="btn-nq" id="btn-nq" style="background:'+s.cert.color+'">Next Question →</button>'+
+    '</div>';
+  document.querySelectorAll('.qopt').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(s.answered)return;s.answered=true;
+      var chosen=parseInt(btn.dataset.i),correct=q.a;
+      document.querySelectorAll('.qopt').forEach(function(b,i){b.disabled=true;if(i===correct)b.classList.add('correct');else if(i===chosen)b.classList.add('wrong');});
+      if(chosen===correct)s.score++;else s.wrong.push(q);
+      var exp=document.getElementById('qexp');
+      exp.className='qexp show '+(chosen===correct?'correct':'wrong');
+      exp.innerHTML=q.explain||'';
+      var nxt=document.getElementById('btn-nq');nxt.className='btn-nq show';
+      nxt.addEventListener('click',function(){s.idx++;s.answered=false;renderQ();});
+    });
   });
-  document.getElementById('qnext').addEventListener('click',nextQ);
 }
-function pickQ(idx){
-  const s=quizState;const q=s.qs[s.idx];
-  document.querySelectorAll('.qo').forEach(b=>b.disabled=true);
-  document.getElementById('qo-'+idx).classList.add(idx===q.a?'ok':'bad');
-  if(idx!==q.a) document.getElementById('qo-'+q.a).classList.add('ok');
-  const fb=document.getElementById('qfb');
-  fb.className=`qfb ${idx===q.a?'ok':'bad'} show`;
-  if(idx===q.a){s.score++;xp+=10;updateProgress();fb.innerHTML=`✅ <strong>Correct!</strong> ${fmtCode(q.explain)}`}
-  else{s.wrong.push(q);fb.innerHTML=`❌ <strong>Incorrect.</strong> ${fmtCode(q.explain)}`}
-  document.getElementById('qnext').className=`btn-qn show`;
-}
-function nextQ(){quizState.idx++;renderQ()}
 function renderScore(){
-  const s=quizState;
-  const pct=Math.round(s.score/s.qs.length*100);
-  const pass=pct>=70;
-  const emoji=pct===100?'🏆':pct>=85?'🎉':pct>=70?'✅':'📖';
-  const msg=pass?`<span style="color:var(--green)">PASS</span>`:` <span style="color:var(--red)">STUDY MORE</span> — need 70%+`;
-  const bk=s.wrong.length?`<div class="sc-bk"><strong>Review:</strong><br>${s.wrong.map(q=>`• ${q.section}: ${q.q.substring(0,55)}...`).join('<br>')}</div>`:'';
-  document.getElementById('quiz-wrap').innerHTML=`
-    <div class="sc">
-      <div class="sc-em">${emoji}</div>
-      <div class="sc-num" style="color:${s.cert.color}">${pct}%</div>
-      <div class="sc-lbl">${s.score}/${s.qs.length} correct · ${msg}</div>
-      ${bk}
-      <button class="btn-retry" id="btn-retry-sc">Retry</button>
-      <button class="btn-qn show" style="background:${s.cert.color}" id="btn-alltopics-sc">All Topics</button>
-    </div>`;
-  document.getElementById('btn-retry-sc').addEventListener('click',()=>startQuiz(quizState.qs));
-  document.getElementById('btn-alltopics-sc').addEventListener('click',()=>renderQuizForCert());
+  var s=quizState,pct=Math.round(s.score/s.qs.length*100);
+  var em=pct>=80?'🏆':pct>=60?'💪':'📚';
+  var wrap=document.getElementById('quiz-wrap');
+  wrap.innerHTML=
+    '<div class="scard">'+
+      '<div class="scard-em">'+em+'</div>'+
+      '<div class="scard-num" style="color:'+s.cert.color+'">'+pct+'%</div>'+
+      '<div class="scard-lbl">'+s.score+' of '+s.qs.length+' correct</div>'+
+      '<div class="scard-bk"><strong>Result:</strong> '+(pct>=70?'✅ Pass territory':'❌ Need more study')+'<br><strong>Target:</strong> '+s.cert.exam+'<br>'+(s.wrong.length?'<strong>Review:</strong> '+s.wrong.map(function(q){return q.section;}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', '):'')+'</div>'+
+      '<button class="btn-retry" onclick="buildQuizGrid()">← All Certs</button>'+
+      '<button class="btn-again" style="background:'+s.cert.color+'" onclick="startQuiz(\''+s.cert.id+'\')">Try Again</button>'+
+    '</div>';
 }
 
-/* ════════════════════════════════════════════════════════════
-   TAB SWITCHING
-════════════════════════════════════════════════════════════ */
-function switchTab(tab, btn){
-  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('on'));
-  document.getElementById('pnl-'+tab).classList.add('on');
-  if(btn) btn.classList.add('on');
-  if(tab==='lab' && activeSection?.lab) loadLab();
-  if(tab==='quiz') renderQuizForCert();
+/* ── TABS ── */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  var btn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+  var panel=document.getElementById('panel-'+name);
+  if(btn)btn.classList.add('active');
+  if(panel)panel.classList.add('active');
 }
 
-/* ════════════════════════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════════════════════════ */
-function esc(s){
-  if(!s)return'';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          .replace(/`([^`]+)`/g,'<code>$1</code>');
-}
-function fmtCode(t){return esc(t)}
+/* ── UTILS ── */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-document.addEventListener('DOMContentLoaded', function(){
-  var sb = document.getElementById('save-btn');
-  var ak = document.getElementById('apikey');
-  if(sb) sb.addEventListener('click', saveKey);
-  if(ak) ak.addEventListener('keydown', function(e){ if(e.key==='Enter') saveKey(); });
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',function(){
+  buildRail();
+  buildQuizGrid();
+  document.getElementById('btn-save-key').addEventListener('click',saveKey);
+  document.getElementById('apikey').addEventListener('keydown',function(e){if(e.key==='Enter')saveKey();});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.addEventListener('click',function(){switchTab(b.dataset.tab);});});
+  document.querySelectorAll('.lt').forEach(function(b){b.addEventListener('click',function(){showLabTab(b.dataset.lt);});});
+  document.getElementById('btn-hint').addEventListener('click',showHint);
+  document.getElementById('btn-check').addEventListener('click',checkLab);
+  document.getElementById('tutor-send').addEventListener('click',sendTutor);
+  document.getElementById('tutor-input').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendTutor();}});
+  document.getElementById('term-field').addEventListener('keydown',function(e){if(e.key==='Enter'){runCmd(e.target.value);e.target.value='';}});
 });
-
-
-buildRail();
-
-/* ════════════════════════════════════════════════════════════
-   SELECT CERT
-════════════════════════════════════════════════════════════ */
-function selectCert(id){
-  activeCert = CERTS[id];
-  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('sel'));
-  const rb = document.getElementById('rb-'+id);
-  rb.classList.add('sel');
-  rb.style.background = activeCert.dim;
-  rb.style.borderColor = activeCert.border;
-  // sidebar
-  document.getElementById('ssb-name').textContent = activeCert.name;
-  document.getElementById('ssb-name').style.color = activeCert.color;
-  document.getElementById('ssb-meta').textContent = activeCert.exam;
-  document.getElementById('ssb-prog').style.background = activeCert.color;
-  buildSidebar();
-  // auto-select first section
-  const firstSection = activeCert.sections[0]?.items[0];
-  if(firstSection) selectSection(firstSection.id);
-  updateProgress();
-  renderQuizForCert();
-}
-
-/* ════════════════════════════════════════════════════════════
-   BUILD SIDEBAR
-════════════════════════════════════════════════════════════ */
-function buildSidebar(){
-  const list = document.getElementById('ssb-list');
-  let html = '';
-  activeCert.sections.forEach(grp=>{
-    html += `<div class="sg"><div class="sg-label">${grp.group}</div>`;
-    grp.items.forEach(item=>{
-      const done = completed.has(item.id);
-      html += `<div class="si${done?' done':''}" id="si-${item.id}" onclick="selectSection('${item.id}')">
-        <div class="si-dot" style="${done?'':'background:'+activeCert.color+'40'}"></div>
-        <div class="si-txt">${item.label}</div>
-        ${item.lab?`<div class="si-lab-tag" style="color:${activeCert.color};border-color:${activeCert.color}40;background:${activeCert.dim}">LAB</div>`:''}
-      </div>`;
-    });
-    html += '</div>';
-  });
-  list.innerHTML = html;
-}
-
-function updateProgress(){
-  if(!activeCert) return;
-  const allItems = activeCert.sections.flatMap(g=>g.items);
-  const done = allItems.filter(i=>completed.has(i.id)).length;
-  const pct = allItems.length ? (done/allItems.length*100) : 0;
-  document.getElementById('ssb-prog').style.width = pct+'%';
-  document.getElementById('done-chip').textContent = done+'/'+allItems.length+' sections';
-  document.getElementById('xp-chip').textContent = xp+' XP';
-}
-
-/* ════════════════════════════════════════════════════════════
-   SELECT SECTION
-════════════════════════════════════════════════════════════ */
-function selectSection(id){
-  activeSection = null;
-  activeCert.sections.forEach(g=>g.items.forEach(i=>{ if(i.id===id) activeSection=i; }));
-  if(!activeSection) return;
-  document.querySelectorAll('.si').forEach(el=>el.classList.remove('active'));
-  const el = document.getElementById('si-'+id);
-  if(el) el.classList.add('active');
-  renderLearn();
-  if(activeSection.lab) loadLab();
-  tutorHistory = [];
-  const msgs = document.getElementById('ai-msgs');
-  msgs.innerHTML = '';
-  addBot(`On: <strong style="color:${activeCert.color}">${activeCert.name} — ${activeSection.label}</strong>. Ask me anything — exam questions, deeper explanations, or "how does this work in real life?"`);
-}
-
-/* ════════════════════════════════════════════════════════════
-   RENDER LEARN
-════════════════════════════════════════════════════════════ */
-
-function completeSection(){
-  if(!activeSection) return;
-  completed.add(activeSection.id);
-  xp += 20;
-  const el = document.getElementById('si-'+activeSection.id);
-  if(el){ el.classList.add('done'); el.querySelector('.si-dot').style.background='var(--green)'; }
-  updateProgress();
-  nextSection();
-}
-function nextSection(){
-  const all = activeCert.sections.flatMap(g=>g.items);
-  const idx = all.findIndex(i=>i.id===activeSection?.id);
-  if(idx < all.length-1) selectSection(all[idx+1].id);
-}
-function prevSection(){
-  const all = activeCert.sections.flatMap(g=>g.items);
-  const idx = all.findIndex(i=>i.id===activeSection?.id);
-  if(idx > 0) selectSection(all[idx-1].id);
-}
-
-/* ════════════════════════════════════════════════════════════
-   LOAD LAB
-════════════════════════════════════════════════════════════ */
-function loadLab(){
-  if(!activeSection) return;
-  const s = activeSection;
-  const c = activeCert;
-  const lab = LABS[s.id] || {
-    title: c.name+' — '+s.label, obj:'Hands-On Practice', fname:'practice.sh',
-    inst:'<h2>'+s.label+'</h2><p>Practice the key commands from this section.</p>'+
-         '<div class="step"><div class="sn" style="background:'+c.dot+'">1</div>Review the Learn tab</div>'+
-         '<div class="step"><div class="sn" style="background:'+c.dot+'">2</div>Write commands in editor</div>'+
-         '<div class="step"><div class="sn" style="background:'+c.dot+'">3</div>Test in the terminal</div>',
-    ent:'<h2>Enterprise Context</h2><p>'+s.label+' is critical in enterprise '+c.name+' environments.</p>',
-    tips:'<h2>Exam Tips</h2><div class="step"><div class="sn" style="background:'+c.dot+'">1</div>Review exam objectives</div>'+
-         '<div class="step"><div class="sn" style="background:'+c.dot+'">2</div>Practice hands-on in a real environment</div>',
-    starter:'# Practice: '+s.label+'\n\n',
-    hint:'Review the Learn tab and implement the key concepts',
-    checks:[{pattern:'.{5}',msg:'Some content entered'}],
-    cmds:{help:['Type commands related to '+s.label]}
-  };
-  activeLab = lab;
-  activeLabTab = 'inst';
-  document.getElementById('lab-inst').innerHTML = lab.inst;
-  document.getElementById('lab-ti').textContent = lab.title;
-  document.getElementById('lab-obj').textContent = lab.obj;
-  document.getElementById('lab-obj').style.display = '';
-  document.getElementById('ed-fn').textContent = lab.fname;
-  document.getElementById('editor').value = lab.starter || '';
-  document.getElementById('vbar').innerHTML = '<div class="v-dot" style="background:var(--t3)"></div><span style="color:var(--t3)">Write solution then click Check</span>';
-  document.getElementById('term-out').innerHTML = '<span class="tdim">Type a command below ↓</span>';
-  document.querySelectorAll('.lt').forEach(b=>b.classList.remove('on'));
-  document.querySelector('.lt[data-t="inst"]').classList.add('on');
-}
-function switchLabTab(tab, btn){
-  activeLabTab = tab;
-  document.querySelectorAll('.lt').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-  if(!activeLab) return;
-  if(tab==='inst') document.getElementById('lab-inst').innerHTML = activeLab.inst;
-  else if(tab==='ent') document.getElementById('lab-inst').innerHTML = activeLab.ent;
-  else if(tab==='tips') document.getElementById('lab-inst').innerHTML = activeLab.tips;
-}
-
-function runCmd(){
-  const inp = document.getElementById('t-in');
-  const cmd = inp.value.trim();
-  if(!cmd) return;
-  inp.value = '';
-  const out = document.getElementById('term-out');
-  const cmdLine = document.createElement('div');
-  cmdLine.innerHTML = `<span class="tcmd">$ ${esc(cmd)}</span>`;
-  out.appendChild(cmdLine);
-  const cmds = activeLab?.cmds || {};
-  const res = cmds[cmd] || cmds[cmd.toLowerCase()];
-  if(res){
-    res.forEach((line,i)=>{
-      setTimeout(()=>{
-        const d = document.createElement('div');
-        d.className = line.startsWith('✅')?'tok':line.startsWith('+')?'tok':line.includes('error')||line.startsWith('-')?'terr':line.startsWith('Plan:')||line.includes('created')?'tinfo':'tdim';
-        d.textContent = line;
-        out.appendChild(d);
-        out.scrollTop = out.scrollHeight;
-      }, i*70);
-    });
-  } else if(cmd==='clear'){
-    out.innerHTML='';
-  } else {
-    const d=document.createElement('div');
-    d.className='twarn';
-    const avail = Object.keys(cmds);
-    d.textContent = `"${cmd}" not in sim. Try: ${avail.slice(0,4).join(' | ')}${avail.length>4?' | ...':''}`;
-    out.appendChild(d);
-  }
-  out.scrollTop = out.scrollHeight;
-}
-
-function checkLab(){
-  const code = document.getElementById('editor').value;
-  const lab = activeLab;
-  if(!lab) return;
-  document.getElementById('btn-check').disabled = true;
-  let results = lab.checks.map(c=>({ ok:c.re.test(code), msg:c.msg }));
-  const pass = results.every(r=>r.ok);
-  const bar = document.getElementById('vbar');
-  if(pass){
-    bar.innerHTML = `<div class="v-dot" style="background:var(--green)"></div><span style="color:var(--green);font-weight:600">✅ All checks passed! +30 XP</span>`;
-    xp += 30;
-    updateProgress();
-    const out = document.getElementById('term-out');
-    const d=document.createElement('div');d.className='tok';d.textContent='✅ Lab validation passed.';out.appendChild(d);out.scrollTop=out.scrollHeight;
-  } else {
-    const ok = results.filter(r=>r.ok).map(r=>`<span style="color:var(--green)">✓ ${esc(r.msg)}</span>`).join(' · ');
-    const fail = results.filter(r=>!r.ok).map(r=>`<span style="color:var(--red)">✗ ${esc(r.msg)}</span>`).join(' · ');
-    bar.innerHTML = `<div class="v-dot" style="background:var(--red)"></div><div style="font-size:11px;line-height:1.7">${ok}${ok&&fail?' · ':''}${fail}</div>`;
-  }
-  document.getElementById('btn-check').disabled = false;
-}
-
-function showHint(){
-  if(!activeLab?.hint) return;
-  const out = document.getElementById('term-out');
-  const d=document.createElement('div');d.className='tinfo';d.textContent='💡 Hint: '+activeLab.hint;out.appendChild(d);out.scrollTop=out.scrollHeight;
-}
-
-/* ════════════════════════════════════════════════════════════
-   AI TUTOR
-════════════════════════════════════════════════════════════ */
-function addBot(html){
-  const msgs=document.getElementById('ai-msgs');
-  const d=document.createElement('div');d.className='am b';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
-}
-function addUser(txt){
-  const msgs=document.getElementById('ai-msgs');
-  const d=document.createElement('div');
-  d.className='am u';
-  d.style.background=activeCert?activeCert.dim:'var(--s2)';
-  d.style.border=`1px solid ${activeCert?activeCert.border:'var(--b2)'}`;
-  d.style.color=activeCert?activeCert.color:'var(--t2)';
-  d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
-}
-async 
-function renderQuizForCert(){
-  if(!activeCert) return;
-  // Collect all questions from this cert
-  const allQs = activeCert.sections.flatMap(g=>g.items.flatMap(i=>
-    (i.quiz||[]).map(q=>({...q, section:i.label}))
-  ));
-  if(!allQs.length){
-    document.getElementById('quiz-wrap').innerHTML=`<div style="text-align:center;color:var(--t3);padding:40px"><div style="font-size:28px">🎯</div><div style="margin-top:10px">Select a section and complete the Learn tab to unlock quiz questions.</div></div>`;
-    return;
-  }
-  // Build domain cards from sections
-  const sectionGroups = activeCert.sections.map(g=>({
-    label:g.group,
-    qs: g.items.flatMap(i=>(i.quiz||[]).map(q=>({...q,section:i.label})))
-  })).filter(g=>g.qs.length);
-
-  // Store quiz groups globally for safe onclick reference
-  window._quizGroups = sectionGroups;
-  window._quizAllQs = allQs;
-
-  let html=`<div class="quiz-hdr" style="margin-bottom:8px"><div style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700">${activeCert.name} Quiz</div><span class="xp-chip">${xp} XP</span></div>
-    <p style="font-size:12px;color:var(--t3);margin-bottom:12px">${activeCert.exam}</p>
-    <div class="qdomain-grid">`;
-  sectionGroups.forEach((g,i)=>{
-    html+=`<div class="qdc" data-qidx="${i}">
-      <div class="qdc-icon">${['📋','🔧','💾','🔐','🌐','⚙️'][i%6]}</div>
-      <div class="qdc-title">${g.label}</div>
-      <div class="qdc-sub">${g.qs.length} questions</div>
-    </div>`;
-  });
-  html+=`<div class="qdc" data-qidx="all">
-    <div class="qdc-icon">🎯</div>
-    <div class="qdc-title">Full Mixed Exam</div>
-    <div class="qdc-sub">${allQs.length} questions · all domains</div>
-  </div></div>`;
-  document.getElementById('quiz-wrap').innerHTML=html;
-  // Attach click events safely
-  document.querySelectorAll('.qdc').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const idx = el.dataset.qidx;
-      if(idx==='all') startQuiz(window._quizAllQs);
-      else startQuiz(window._quizGroups[parseInt(idx)].qs);
-    });
-  });
-}
-
-function startQuiz(qs){
-  quizState={cert:activeCert,qs,idx:0,score:0,wrong:[]};
-  renderQ();
-}
-function renderQ(){
-  const s=quizState;
-  if(s.idx>=s.qs.length){renderScore();return}
-  const q=s.qs[s.idx];
-  const pct=(s.idx/s.qs.length)*100;
-  const lets=['A','B','C','D'];
-  const c=s.cert;
-  document.getElementById('quiz-wrap').innerHTML=`
-    <div class="quiz-hdr"><div style="font-weight:700;font-size:15px">Q${s.idx+1}/${s.qs.length}</div><span class="xp-chip">${xp} XP</span></div>
-    <div class="qprog"><div class="qprog-f" style="width:${pct}%;background:${c.color}"></div></div>
-    <div class="qcard">
-      <div class="q-meta-row">
-        <span class="q-dtag" style="color:${c.color};border-color:${c.color}40;background:${c.dim}">${q.section||c.name}</span>
-      </div>
-      <div class="q-txt">${esc(q.q).replace(/`([^`]+)`/g,'<code>$1</code>')}</div>
-      <div class="q-opts">
-        ${q.opts.map((o,i)=>`<button class="qo" id="qo-${i}" data-oidx="${i}">
-          <span class="q-let">${lets[i]}</span>${esc(o)}
-        </button>`).join('')}
-      </div>
-      <div class="qfb" id="qfb"></div>
-      <button class="btn-qn" id="qnext" style="background:${c.color}">${s.idx===s.qs.length-1?'See Results →':'Next →'}</button>
-    </div>`;
-  document.querySelectorAll('.qo').forEach(btn=>{
-    btn.addEventListener('click',()=>pickQ(parseInt(btn.dataset.oidx)));
-  });
-  document.getElementById('qnext').addEventListener('click',nextQ);
-}
-function pickQ(idx){
-  const s=quizState;const q=s.qs[s.idx];
-  document.querySelectorAll('.qo').forEach(b=>b.disabled=true);
-  document.getElementById('qo-'+idx).classList.add(idx===q.a?'ok':'bad');
-  if(idx!==q.a) document.getElementById('qo-'+q.a).classList.add('ok');
-  const fb=document.getElementById('qfb');
-  fb.className=`qfb ${idx===q.a?'ok':'bad'} show`;
-  if(idx===q.a){s.score++;xp+=10;updateProgress();fb.innerHTML=`✅ <strong>Correct!</strong> ${fmtCode(q.explain)}`}
-  else{s.wrong.push(q);fb.innerHTML=`❌ <strong>Incorrect.</strong> ${fmtCode(q.explain)}`}
-  document.getElementById('qnext').className=`btn-qn show`;
-}
-function nextQ(){quizState.idx++;renderQ()}
-function renderScore(){
-  const s=quizState;
-  const pct=Math.round(s.score/s.qs.length*100);
-  const pass=pct>=70;
-  const emoji=pct===100?'🏆':pct>=85?'🎉':pct>=70?'✅':'📖';
-  const msg=pass?`<span style="color:var(--green)">PASS</span>`:` <span style="color:var(--red)">STUDY MORE</span> — need 70%+`;
-  const bk=s.wrong.length?`<div class="sc-bk"><strong>Review:</strong><br>${s.wrong.map(q=>`• ${q.section}: ${q.q.substring(0,55)}...`).join('<br>')}</div>`:'';
-  document.getElementById('quiz-wrap').innerHTML=`
-    <div class="sc">
-      <div class="sc-em">${emoji}</div>
-      <div class="sc-num" style="color:${s.cert.color}">${pct}%</div>
-      <div class="sc-lbl">${s.score}/${s.qs.length} correct · ${msg}</div>
-      ${bk}
-      <button class="btn-retry" id="btn-retry-sc">Retry</button>
-      <button class="btn-qn show" style="background:${s.cert.color}" id="btn-alltopics-sc">All Topics</button>
-    </div>`;
-  document.getElementById('btn-retry-sc').addEventListener('click',()=>startQuiz(quizState.qs));
-  document.getElementById('btn-alltopics-sc').addEventListener('click',()=>renderQuizForCert());
-}
-
-/* ════════════════════════════════════════════════════════════
-   TAB SWITCHING
-════════════════════════════════════════════════════════════ */
-function switchTab(tab, btn){
-  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('on'));
-  document.getElementById('pnl-'+tab).classList.add('on');
-  if(btn) btn.classList.add('on');
-  if(tab==='lab' && activeSection?.lab) loadLab();
-  if(tab==='quiz') renderQuizForCert();
-}
-
-/* ════════════════════════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════════════════════════ */
-function esc(s){
-  if(!s)return'';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          .replace(/`([^`]+)`/g,'<code>$1</code>');
-}
-function fmtCode(t){return esc(t)}
-
-document.addEventListener('DOMContentLoaded', function(){
-  var sb = document.getElementById('save-btn');
-  var ak = document.getElementById('apikey');
-  if(sb) sb.addEventListener('click', saveKey);
-  if(ak) ak.addEventListener('keydown', function(e){ if(e.key==='Enter') saveKey(); });
-});
-
-
 </script>
 </body>
 </html>
